@@ -2,7 +2,7 @@
 
 ## 📌 Project Overview
 
-This project is a **real-time collaborative Kanban board** built with **Next.js 14 (App Router)**.
+This project is a **real-time collaborative Kanban board** built with **Next.js 16 (App Router)**.
 It demonstrates modern full-stack architecture using **Server Components, Server Actions, and client-side state management**.
 
 The goal is not just functionality, but to showcase:
@@ -33,7 +33,7 @@ Realtime Layer (Pusher / WebSocket)
 
 | Layer      | Technology              | Reason                        |
 | ---------- | ----------------------- | ----------------------------- |
-| Framework  | Next.js 14 (App Router) | Modern SSR + RSC architecture |
+| Framework  | Next.js 16 (App Router) | Modern SSR + RSC architecture |
 | Language   | TypeScript              | Type safety                   |
 | Database   | PostgreSQL              | Relational + scalable         |
 | ORM        | Prisma                  | Developer productivity        |
@@ -143,14 +143,79 @@ Instead of grouping by type (`components`, `services`), we group by **feature**:
 
 ## 📁 Folder Structure Philosophy
 
-| Folder        | Responsibility              |
-| ------------- | --------------------------- |
-| `/app`        | Routing + Server Components |
-| `/components` | UI (dumb components)        |
-| `/features`   | Business logic              |
-| `/server`     | Server Actions              |
-| `/lib`        | Shared utilities            |
-| `/prisma`     | Database schema             |
+This project keeps routing inside `app/` and moves reusable logic into top-level feature, server, and utility folders.
+That split makes it easier to grow the app without mixing route files, domain logic, and shared UI concerns together.
+
+```text
+/
+├─ app/
+│  ├─ (auth)/
+│  │  ├─ login/
+│  │  │  └─ page.tsx
+│  │  └─ register/
+│  │     └─ page.tsx
+│  ├─ (dashboard)/
+│  │  └─ boards/
+│  │     ├─ page.tsx                  # board list page
+│  │     └─ [boardId]/
+│  │        ├─ page.tsx               # main kanban board page
+│  │        ├─ loading.tsx
+│  │        └─ error.tsx
+│  ├─ api/
+│  │  ├─ boards/
+│  │  │  └─ route.ts
+│  │  ├─ columns/
+│  │  │  └─ route.ts
+│  │  ├─ tasks/
+│  │  │  └─ route.ts
+│  │  └─ realtime/
+│  │     └─ route.ts                  # realtime webhook / event endpoint
+│  ├─ layout.tsx
+│  └─ page.tsx
+├─ components/
+│  ├─ ui/                             # shared UI primitives
+│  ├─ board/
+│  │  ├─ Board.tsx
+│  │  ├─ Column.tsx
+│  │  ├─ TaskCard.tsx
+│  │  └─ AddTaskModal.tsx
+│  └─ common/
+│     ├─ Navbar.tsx
+│     └─ Sidebar.tsx
+├─ features/
+│  ├─ board/
+│  │  ├─ board.service.ts             # server/domain logic
+│  │  ├─ board.hooks.ts               # client hooks
+│  │  ├─ board.store.ts               # local board state
+│  │  └─ board.types.ts
+│  └─ task/
+│     ├─ task.service.ts
+│     ├─ task.hooks.ts
+│     └─ task.types.ts
+├─ lib/
+│  ├─ prisma.ts
+│  ├─ auth.ts
+│  ├─ pusher.ts                       # or websocket config
+│  ├─ utils.ts
+│  └─ validations.ts
+├─ server/
+│  ├─ actions/
+│  │  ├─ board.actions.ts             # Server Actions
+│  │  └─ task.actions.ts
+│  └─ db/
+│     └─ queries.ts
+├─ hooks/
+│  ├─ useRealtime.ts
+│  └─ useDebounce.ts
+├─ styles/
+│  └─ globals.css
+├─ prisma/
+│  └─ schema.prisma
+├─ types/
+│  └─ index.ts
+├─ env.mjs
+└─ proxy.ts                           # Next.js 16 replacement for middleware.ts
+```
 
 ---
 
