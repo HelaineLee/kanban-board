@@ -11,3 +11,34 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id     String  @id @default(cuid())
+  email  String  @unique
+  boards Board[]
+}
+
+model Board {
+  id      String   @id @default(cuid())
+  title   String
+  userId  String
+  columns Column[]
+  user    User     @relation(fields: [userId], references: [id])
+}
+
+model Column {
+  id      String @id @default(cuid())
+  title   String
+  boardId String
+  tasks   Task[]
+  order   Int
+  board   Board  @relation(fields: [boardId], references: [id])
+}
+
+model Task {
+  id       String @id @default(cuid())
+  title    String
+  columnId String
+  order    Int
+  column   Column @relation(fields: [columnId], references: [id])
+}
