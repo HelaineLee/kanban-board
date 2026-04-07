@@ -23,17 +23,36 @@ export type DbBoard = {
 type DbUser = {
   id: string;
   email: string;
+  passwordHash: string;
+};
+
+type DbBoardOwner = {
+  id: string;
+  userId: string;
+};
+
+type DbColumnOwner = {
+  id: string;
+  boardId: string;
+  board: DbBoardOwner;
+};
+
+type DbTaskOwner = {
+  id: string;
+  columnId: string;
+  column: DbColumnOwner;
 };
 
 type LoosePrismaClient = {
   $queryRaw: (query: TemplateStringsArray, ...values: unknown[]) => Promise<unknown>;
   board: {
     findMany: (args: {
+      where: { userId: string };
       orderBy: { title: "asc" };
       include: typeof boardInclude;
     }) => Promise<DbBoard[]>;
-    findUnique: (args: {
-      where: { id: string };
+    findFirst: (args: {
+      where: { id: string; userId: string };
       include: typeof boardInclude;
     }) => Promise<DbBoard | null>;
     create: (args: {
@@ -49,9 +68,19 @@ type LoosePrismaClient = {
   };
   task: {
     findMany: (args: {
-      where: { column: { boardId: string } };
+      where: { column: { boardId: string; board: { userId: string } } };
       orderBy: { order: "asc" };
     }) => Promise<DbTask[]>;
+    findUnique: (args: {
+      where: { id: string };
+      include: {
+        column: {
+          include: {
+            board: true;
+          };
+        };
+      };
+    }) => Promise<DbTaskOwner | null>;
     create: (args: {
       data: { title: string; columnId: string; order: number };
     }) => Promise<DbTask>;
@@ -60,9 +89,18 @@ type LoosePrismaClient = {
       data: { columnId: string; order: number };
     }) => Promise<DbTask>;
   };
+  column: {
+    findUnique: (args: {
+      where: { id: string };
+      include: {
+        board: true;
+      };
+    }) => Promise<DbColumnOwner | null>;
+  };
   user: {
+    findUnique: (args: { where: { email: string } }) => Promise<DbUser | null>;
     findFirst: (args: { orderBy: { email: "asc" } }) => Promise<DbUser | null>;
-    create: (args: { data: { email: string } }) => Promise<DbUser>;
+    create: (args: { data: { email: string; passwordHash: string } }) => Promise<DbUser>;
   };
 };
 
@@ -89,8 +127,11 @@ export async function healthcheckQuery() {
   return { ok: true };
 }
 
-export async function queryBoards(): Promise<DbBoard[]> {
+export async function queryBoards(userId: string): Promise<DbBoard[]> {
   return db.board.findMany({
+    where: {
+      userId,
+    },
     orderBy: {
       title: "asc",
     },
@@ -98,18 +139,21 @@ export async function queryBoards(): Promise<DbBoard[]> {
   });
 }
 
-export async function queryBoardById(boardId: string): Promise<DbBoard | null> {
-  return db.board.findUnique({
-    where: { id: boardId },
+export async function queryBoardById(boardId: string, userId: string): Promise<DbBoard | null> {
+  return db.board.findFirst({
+    where: { id: boardId, userId },
     include: boardInclude,
   });
 }
 
-export async function queryTasksForBoard(boardId: string): Promise<DbTask[]> {
+export async function queryTasksForBoard(boardId: string, userId: string): Promise<DbTask[]> {
   return db.task.findMany({
     where: {
       column: {
         boardId,
+        board: {
+          userId,
+        },
       },
     },
     orderBy: {
@@ -118,25 +162,11 @@ export async function queryTasksForBoard(boardId: string): Promise<DbTask[]> {
   });
 }
 
-export async function insertBoard(name: string): Promise<DbBoard> {
-  const existingUser = await db.user.findFirst({
-    orderBy: {
-      email: "asc",
-    },
-  });
-
-  const user =
-    existingUser ??
-    (await db.user.create({
-      data: {
-        email: "demo@kanban.local",
-      },
-    }));
-
+export async function insertBoard(name: string, userId: string): Promise<DbBoard> {
   return db.board.create({
     data: {
       title: name,
-      userId: user.id,
+      userId,
       columns: {
         create: [
           { title: "Backlog", order: 0 },
@@ -149,7 +179,18 @@ export async function insertBoard(name: string): Promise<DbBoard> {
   });
 }
 
-export async function insertTask(columnId: string, title: string): Promise<DbTask> {
+export async function insertTask(userId: string, columnId: string, title: string): Promise<DbTask> {
+  const column = await db.column.findUnique({
+    where: { id: columnId },
+    include: {
+      board: true,
+    },
+  });
+
+  if (!column || column.board.userId !== userId) {
+    throw new Error("Column not found.");
+  }
+
   return db.task.create({
     data: {
       title,
@@ -159,7 +200,38 @@ export async function insertTask(columnId: string, title: string): Promise<DbTas
   });
 }
 
-export async function updateTaskColumn(taskId: string, newColumnId: string): Promise<DbTask> {
+export async function updateTaskColumn(
+  userId: string,
+  taskId: string,
+  newColumnId: string,
+): Promise<DbTask> {
+  const [task, targetColumn] = await Promise.all([
+    db.task.findUnique({
+      where: { id: taskId },
+      include: {
+        column: {
+          include: {
+            board: true,
+          },
+        },
+      },
+    }),
+    db.column.findUnique({
+      where: { id: newColumnId },
+      include: {
+        board: true,
+      },
+    }),
+  ]);
+
+  if (!task || task.column.board.userId !== userId) {
+    throw new Error("Task not found.");
+  }
+
+  if (!targetColumn || targetColumn.board.userId !== userId) {
+    throw new Error("Destination column not found.");
+  }
+
   return db.task.update({
     where: { id: taskId },
     data: {
