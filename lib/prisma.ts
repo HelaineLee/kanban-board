@@ -6,7 +6,9 @@ const globalForPrisma = globalThis as typeof globalThis & {
 
 export const prisma =
   globalForPrisma.prisma ??
-  new PrismaClient({} as unknown as ConstructorParameters<typeof PrismaClient>[0]);
+  new PrismaClient({
+    accelerateUrl: process.env["DATABASE_URL"],
+  } as unknown as ConstructorParameters<typeof PrismaClient>[0]);
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
