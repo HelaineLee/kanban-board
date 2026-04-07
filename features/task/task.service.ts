@@ -1,6 +1,5 @@
 import "server-only";
 
-import { getBoard } from "@/features/board/board.service";
 import type { TaskRecord } from "@/features/task/task.types";
 import {
   insertTask,
@@ -20,27 +19,30 @@ function mapTask(task: RawTask): TaskRecord {
   };
 }
 
-export async function getTasks(boardId?: string): Promise<TaskRecord[]> {
+export async function getTasks(
+  boardId: string | undefined,
+  userId: string,
+): Promise<TaskRecord[]> {
   if (!boardId) {
     return [];
   }
 
   try {
-    const tasks = await queryTasksForBoard(boardId);
+    const tasks = await queryTasksForBoard(boardId, userId);
     return tasks.map(mapTask);
   } catch {
-    const board = await getBoard(boardId);
-    return board.columns.flatMap((column) => column.tasks);
+    return [];
   }
 }
 
 export async function createTask(
+  userId: string,
   columnId: string,
   title: string,
   description = "",
 ): Promise<TaskRecord> {
   try {
-    const task = await insertTask(columnId, title);
+    const task = await insertTask(userId, columnId, title);
     return mapTask(task);
   } catch {
     return {
@@ -54,11 +56,12 @@ export async function createTask(
 }
 
 export async function moveTask(
+  userId: string,
   taskId: string,
   newColumnId: string,
 ): Promise<TaskRecord> {
   try {
-    const task = await updateTaskColumn(taskId, newColumnId);
+    const task = await updateTaskColumn(userId, taskId, newColumnId);
     return mapTask(task);
   } catch {
     return {

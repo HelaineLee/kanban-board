@@ -1,4 +1,5 @@
 import "server-only";
+import { notFound } from "next/navigation";
 
 import type { BoardRecord, BoardSummary } from "@/features/board/board.types";
 import type { TaskRecord } from "@/features/task/task.types";
@@ -141,18 +142,18 @@ function toBoardSummary(board: BoardRecord): BoardSummary {
   };
 }
 
-export async function getBoards(): Promise<BoardSummary[]> {
+export async function getBoards(userId: string): Promise<BoardSummary[]> {
   try {
-    const boards = await queryBoards();
+    const boards = await queryBoards(userId);
     return boards.map((board) => toBoardSummary(mapBoard(board)));
   } catch {
     return fallbackBoards.map(toBoardSummary);
   }
 }
 
-export async function getBoard(boardId: string): Promise<BoardRecord> {
+export async function getBoard(boardId: string, userId: string): Promise<BoardRecord> {
   try {
-    const board = await queryBoardById(boardId);
+    const board = await queryBoardById(boardId, userId);
 
     if (board) {
       return mapBoard(board);
@@ -167,20 +168,12 @@ export async function getBoard(boardId: string): Promise<BoardRecord> {
     return cloneBoard(fallbackBoard);
   }
 
-  return {
-    id: boardId,
-    name: "New Board",
-    columns: [
-      { id: `${boardId}-backlog`, name: "Backlog", order: 0, tasks: [] },
-      { id: `${boardId}-progress`, name: "In Progress", order: 1, tasks: [] },
-      { id: `${boardId}-done`, name: "Done", order: 2, tasks: [] },
-    ],
-  };
+  notFound();
 }
 
-export async function createBoard(name: string): Promise<BoardRecord> {
+export async function createBoard(name: string, userId: string): Promise<BoardRecord> {
   try {
-    const board = await insertBoard(name);
+    const board = await insertBoard(name, userId);
     return mapBoard(board);
   } catch {
     return {

@@ -1,13 +1,20 @@
 import { getTasks } from "@/features/task/task.service";
+import { getCurrentUser } from "@/lib/auth";
 import {
   createTask,
   moveTask,
 } from "@/server/actions/task.actions";
 
 export async function GET(request: Request) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const boardId = searchParams.get("boardId") ?? undefined;
-  const tasks = await getTasks(boardId);
+  const tasks = await getTasks(boardId, user.id);
 
   return Response.json({
     message: "Tasks loaded",
@@ -16,6 +23,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const body = (await request.json()) as {
     columnId?: string;
     title?: string;
@@ -35,6 +48,12 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const body = (await request.json()) as {
     taskId?: string;
     newColumnId?: string;

@@ -4,6 +4,7 @@ import {
   createTask as createTaskRecord,
   moveTask as moveTaskRecord,
 } from "@/features/task/task.service";
+import { requireUser } from "@/lib/auth";
 import { isNonEmptyString } from "@/lib/validations";
 
 export async function createTask(columnId: string, title: string, description = "") {
@@ -11,7 +12,9 @@ export async function createTask(columnId: string, title: string, description = 
     throw new Error("Column and title are required.");
   }
 
-  return createTaskRecord(columnId.trim(), title.trim(), description.trim());
+  const user = await requireUser();
+
+  return createTaskRecord(user.id, columnId.trim(), title.trim(), description.trim());
 }
 
 export async function moveTask(taskId: string, newColumnId: string) {
@@ -19,5 +22,7 @@ export async function moveTask(taskId: string, newColumnId: string) {
     throw new Error("Task and destination column are required.");
   }
 
-  return moveTaskRecord(taskId.trim(), newColumnId.trim());
+  const user = await requireUser();
+
+  return moveTaskRecord(user.id, taskId.trim(), newColumnId.trim());
 }
