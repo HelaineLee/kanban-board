@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export function Navbar() {
+import { SignOutButton } from "@/components/auth/SignOutButton";
+import { getCurrentUser } from "@/lib/auth";
+
+export async function Navbar() {
+  const user = await getCurrentUser();
+
   return (
     <nav className="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-4">
       <Link href="/" className="text-lg font-semibold text-zinc-900">
@@ -8,7 +13,17 @@ export function Navbar() {
       </Link>
       <div className="flex items-center gap-4 text-sm text-zinc-600">
         <Link href="/boards">Boards</Link>
-        <Link href="/login">Login</Link>
+        {user ? (
+          <>
+            <span className="hidden text-zinc-500 sm:inline">{user.email}</span>
+            <SignOutButton />
+          </>
+        ) : (
+          <>
+            <Link href="/login">Login</Link>
+            <Link href="/register">Register</Link>
+          </>
+        )}
       </div>
     </nav>
   );

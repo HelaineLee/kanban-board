@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   { href: "/boards", label: "Boards" },
-  { href: "/register", label: "Register" },
+  { href: "/login", label: "Login" },
 ];
 
 export function Sidebar() {
