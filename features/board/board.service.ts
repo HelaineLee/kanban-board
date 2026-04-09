@@ -10,6 +10,8 @@ import {
 } from "@/server/db/queries";
 import type { DbBoard, DbColumn, DbTask } from "@/server/db/queries";
 
+const runtimeBoardsByUser = new Map<string, BoardRecord[]>();
+
 const fallbackBoards: BoardRecord[] = [
   {
     id: "demo-board",
@@ -142,12 +144,21 @@ function toBoardSummary(board: BoardRecord): BoardSummary {
   };
 }
 
+function getRuntimeBoards(userId: string): BoardRecord[] {
+  return runtimeBoardsByUser.get(userId) ?? [];
+}
+
+function addRuntimeBoard(userId: string, board: BoardRecord) {
+  const currentBoards = getRuntimeBoards(userId);
+  runtimeBoardsByUser.set(userId, [board, ...currentBoards]);
+}
+
 export async function getBoards(userId: string): Promise<BoardSummary[]> {
   try {
     const boards = await queryBoards(userId);
     return boards.map((board) => toBoardSummary(mapBoard(board)));
   } catch {
-    return fallbackBoards.map(toBoardSummary);
+    return [...getRuntimeBoards(userId), ...fallbackBoards].map(toBoardSummary);
   }
 }
 
@@ -160,6 +171,12 @@ export async function getBoard(boardId: string, userId: string): Promise<BoardRe
     }
   } catch {
     // Fall back to local demo data when the database is unavailable.
+  }
+
+  const runtimeBoard = getRuntimeBoards(userId).find((board) => board.id === boardId);
+
+  if (runtimeBoard) {
+    return cloneBoard(runtimeBoard);
   }
 
   const fallbackBoard = fallbackBoards.find((board) => board.id === boardId);
@@ -176,7 +193,7 @@ export async function createBoard(name: string, userId: string): Promise<BoardRe
     const board = await insertBoard(name, userId);
     return mapBoard(board);
   } catch {
-    return {
+    const board = {
       id: crypto.randomUUID(),
       name,
       columns: [
@@ -185,5 +202,9 @@ export async function createBoard(name: string, userId: string): Promise<BoardRe
         { id: crypto.randomUUID(), name: "Done", order: 2, tasks: [] },
       ],
     };
+
+    addRuntimeBoard(userId, board);
+
+    return board;
   }
 }

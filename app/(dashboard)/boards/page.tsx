@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CreateBoardForm } from "@/components/board/CreateBoardForm";
 import { getBoards } from "@/features/board/board.service";
 import { requireUser } from "@/lib/auth";
 
@@ -15,6 +16,8 @@ export default async function BoardsPage() {
           Open a board to review work, move tasks, and keep momentum visible.
         </p>
       </header>
+
+      <CreateBoardForm />
 
       {boards.length ? (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -33,7 +36,7 @@ export default async function BoardsPage() {
         </div>
       ) : (
         <div className="rounded-3xl border border-dashed border-zinc-300 bg-white px-6 py-10 text-sm text-zinc-600">
-          No boards yet. Create your first one through the API or the next feature pass.
+          No boards yet. Create your first board above to start planning work.
         </div>
       )}
     </main>
