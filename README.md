@@ -2,6 +2,8 @@
 
 ## 📌 Project Overview
 
+> This project was created using Vibe coding with [Codex](https://openai.com/codex/)
+
 This project is a **real-time collaborative Kanban board** built with **Next.js 16 (App Router)**.
 It demonstrates modern full-stack architecture using **Server Components, Server Actions, and client-side state management**.
 

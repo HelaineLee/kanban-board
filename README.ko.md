@@ -4,6 +4,8 @@
 
 ## 프로젝트 개요
 
+> 이 프로젝트는 [코덱스](https://openai.com/codex/)를 활용하여 바이브 코딩으로 제작되었습니다.
+
 이 프로젝트는 **Next.js 16 (App Router)** 로 구축한 **실시간 협업 칸반 보드**입니다.
 **Server Components, Server Actions, 그리고 클라이언트 상태 관리**를 활용한 현대적인 풀스택 아키텍처를 보여주는 예제입니다.
 
