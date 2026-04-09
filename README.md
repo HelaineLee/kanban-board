@@ -336,3 +336,4 @@ npm run dev
 ## 📬 Feedback
 
 If you have suggestions or improvements, feel free to open an issue or PR.
+[Korean version](./README.ko.md)
