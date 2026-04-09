@@ -41,18 +41,12 @@ export async function createTask(
   title: string,
   description = "",
 ): Promise<TaskRecord> {
-  try {
-    const task = await insertTask(userId, columnId, title);
-    return mapTask(task);
-  } catch {
-    return {
-      id: crypto.randomUUID(),
-      title,
-      description,
-      columnId,
-      order: Date.now(),
-    };
-  }
+  const task = await insertTask(userId, columnId, title);
+
+  return {
+    ...mapTask(task),
+    description,
+  };
 }
 
 export async function moveTask(
@@ -60,16 +54,6 @@ export async function moveTask(
   taskId: string,
   newColumnId: string,
 ): Promise<TaskRecord> {
-  try {
-    const task = await updateTaskColumn(userId, taskId, newColumnId);
-    return mapTask(task);
-  } catch {
-    return {
-      id: taskId,
-      title: "Moved task",
-      description: "",
-      columnId: newColumnId,
-      order: Date.now(),
-    };
-  }
+  const task = await updateTaskColumn(userId, taskId, newColumnId);
+  return mapTask(task);
 }

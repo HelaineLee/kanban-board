@@ -24,6 +24,16 @@ function sortBoard(board: BoardRecord): BoardRecord {
   };
 }
 
+function getNextColumnTaskOrder(board: BoardRecord, columnId: string): number {
+  const column = board.columns.find((item) => item.id === columnId);
+
+  if (!column || column.tasks.length === 0) {
+    return 0;
+  }
+
+  return Math.max(...column.tasks.map((task) => task.order)) + 1;
+}
+
 export const useBoardStore = create<BoardStoreState>((set) => ({
   activeBoard: null,
   initializeBoard: (board) => {
@@ -77,6 +87,7 @@ export const useBoardStore = create<BoardStoreState>((set) => ({
       }
 
       let movedTask: TaskRecord | null = null;
+      const nextOrder = getNextColumnTaskOrder(state.activeBoard, targetColumnId);
 
       const columnsWithoutTask = state.activeBoard.columns.map((column) => {
         const task = column.tasks.find((item) => item.id === taskId);
@@ -85,7 +96,7 @@ export const useBoardStore = create<BoardStoreState>((set) => ({
           movedTask = {
             ...task,
             columnId: targetColumnId,
-            order: Date.now(),
+            order: nextOrder,
           };
         }
 

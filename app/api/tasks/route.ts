@@ -35,16 +35,22 @@ export async function POST(request: Request) {
     description?: string;
   };
 
-  const task = await createTask(
-    body.columnId ?? "",
-    body.title ?? "",
-    body.description ?? "",
-  );
+  try {
+    const task = await createTask(
+      body.columnId ?? "",
+      body.title ?? "",
+      body.description ?? "",
+    );
 
-  return Response.json({
-    message: "Task created",
-    data: task,
-  });
+    return Response.json({
+      message: "Task created",
+      data: task,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to create task.";
+
+    return Response.json({ message }, { status: 400 });
+  }
 }
 
 export async function PATCH(request: Request) {
@@ -59,10 +65,16 @@ export async function PATCH(request: Request) {
     newColumnId?: string;
   };
 
-  const task = await moveTask(body.taskId ?? "", body.newColumnId ?? "");
+  try {
+    const task = await moveTask(body.taskId ?? "", body.newColumnId ?? "");
 
-  return Response.json({
-    message: "Task moved",
-    data: task,
-  });
+    return Response.json({
+      message: "Task moved",
+      data: task,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to move task.";
+
+    return Response.json({ message }, { status: 400 });
+  }
 }

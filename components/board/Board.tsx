@@ -42,7 +42,11 @@ export function Board({ board }: BoardProps) {
     });
 
     if (!response.ok) {
-      setStatusMessage("We couldn't save that task yet. Please try again.");
+      const payload = (await response.json().catch(() => null)) as
+        | { message?: string }
+        | null;
+
+      setStatusMessage(payload?.message ?? "We couldn't save that task yet. Please try again.");
       return;
     }
 
@@ -93,8 +97,12 @@ export function Board({ board }: BoardProps) {
     });
 
     if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as
+        | { message?: string }
+        | null;
+
       replaceBoard(snapshot);
-      setStatusMessage("Task move failed, so we rolled the board back.");
+      setStatusMessage(payload?.message ?? "Task move failed, so we rolled the board back.");
       return;
     }
 

@@ -68,7 +68,9 @@ type LoosePrismaClient = {
   };
   task: {
     findMany: (args: {
-      where: { column: { boardId: string; board: { userId: string } } };
+      where:
+        | { column: { boardId: string; board: { userId: string } } }
+        | { columnId: string };
       orderBy: { order: "asc" };
     }) => Promise<DbTask[]>;
     findUnique: (args: {
@@ -120,6 +122,18 @@ const boardInclude = {
 };
 
 const db = prisma as unknown as LoosePrismaClient;
+
+async function getNextTaskOrder(columnId: string): Promise<number> {
+  const tasks = await db.task.findMany({
+    where: { columnId },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
+  const lastTask = tasks[tasks.length - 1];
+  return lastTask ? lastTask.order + 1 : 0;
+}
 
 export async function healthcheckQuery() {
   await db.$queryRaw`SELECT 1`;
@@ -191,11 +205,13 @@ export async function insertTask(userId: string, columnId: string, title: string
     throw new Error("Column not found.");
   }
 
+  const nextOrder = await getNextTaskOrder(columnId);
+
   return db.task.create({
     data: {
       title,
       columnId,
-      order: Date.now(),
+      order: nextOrder,
     },
   });
 }
@@ -232,11 +248,13 @@ export async function updateTaskColumn(
     throw new Error("Destination column not found.");
   }
 
+  const nextOrder = await getNextTaskOrder(newColumnId);
+
   return db.task.update({
     where: { id: taskId },
     data: {
       columnId: newColumnId,
-      order: Date.now(),
+      order: nextOrder,
     },
   });
 }
