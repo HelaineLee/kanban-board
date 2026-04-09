@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
+import { isValidEmail } from "@/lib/validations";
 
 type ActionState = {
   error?: string;
@@ -32,6 +33,12 @@ export async function registerUser(
   if (!email || !password || !confirmPassword) {
     return {
       error: "Email, password, and confirmation are required.",
+    };
+  }
+
+  if (!isValidEmail(email)) {
+    return {
+      error: "Please enter a valid email address.",
     };
   }
 

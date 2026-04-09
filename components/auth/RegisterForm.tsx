@@ -25,8 +25,10 @@ export function RegisterForm() {
           required
           type="email"
           name="email"
+          pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
           className="w-full rounded-2xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400"
           placeholder="you@example.com"
+          title="Please enter a valid email address, like you@example.com."
         />
       </label>
 
