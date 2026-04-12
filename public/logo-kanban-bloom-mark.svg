@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="markTitle markDesc">
+  <title id="markTitle">Kanban Bloom mark</title>
+  <desc id="markDesc">A rounded kanban board icon with a task card and a bloom accent.</desc>
+  <defs>
+    <linearGradient id="bg" x1="88" y1="72" x2="424" y2="440" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6D5EF9"/>
+      <stop offset="1" stop-color="#4338CA"/>
+    </linearGradient>
+    <linearGradient id="card" x1="126" y1="140" x2="278" y2="316" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E9E4FF"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="304" y1="178" x2="404" y2="292" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9AE6C5"/>
+      <stop offset="1" stop-color="#38B18A"/>
+    </linearGradient>
+    <filter id="shadow" x="36" y="44" width="440" height="444" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="26"/>
+      <feGaussianBlur stdDeviation="20"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.262745 0 0 0 0 0.219608 0 0 0 0 0.792157 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="76" y="72" width="360" height="360" rx="92" fill="url(#bg)"/>
+    <rect x="118" y="122" width="64" height="256" rx="32" fill="#FFFFFF" fill-opacity="0.18"/>
+    <rect x="224" y="122" width="64" height="256" rx="32" fill="#FFFFFF" fill-opacity="0.18"/>
+    <rect x="330" y="122" width="64" height="256" rx="32" fill="#FFFFFF" fill-opacity="0.18"/>
+
+    <g transform="rotate(-10 214 254)">
+      <rect x="132" y="168" width="160" height="156" rx="38" fill="url(#card)"/>
+      <rect x="162" y="206" width="92" height="18" rx="9" fill="#6D5EF9" fill-opacity="0.95"/>
+      <rect x="162" y="240" width="72" height="14" rx="7" fill="#B8B0FF"/>
+      <rect x="162" y="268" width="56" height="14" rx="7" fill="#CFC9FF"/>
+    </g>
+
+    <path d="M360.356 173.033C394.674 186.507 412.213 225.301 399.54 260.572C386.867 295.843 348.774 314.227 314.456 300.754C334.613 285.744 355.532 265.674 366.337 235.611C377.142 205.548 371.468 176.859 360.356 173.033Z" fill="url(#leaf)"/>
+    <path d="M334.614 150.526C361.137 139.833 391.575 151.796 404.924 177.683C418.272 203.57 409.479 235.926 385.289 252.415C384.67 230.257 378.315 207.018 366.949 184.969C355.583 162.92 340.141 147.579 334.614 150.526Z" fill="#B7F3D5" fill-opacity="0.96"/>
+    <circle cx="346" cy="233" r="24" fill="#FFF8D6"/>
+    <circle cx="346" cy="233" r="11" fill="#F7C948"/>
+  </g>
+</svg>
