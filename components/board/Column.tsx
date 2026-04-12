@@ -1,3 +1,7 @@
+"use client";
+
+import { useState, type DragEvent } from "react";
+
 import { TaskCard } from "@/components/board/TaskCard";
 import type { ColumnRecord } from "@/features/board/board.types";
 
@@ -6,6 +10,7 @@ type ColumnProps = {
   canMoveLeft: boolean;
   canMoveRight: boolean;
   onAddTask: () => void;
+  onDropTask: (taskId: string, sourceColumnId: string) => void;
   onMoveTaskLeft: (taskId: string) => void;
   onMoveTaskRight: (taskId: string) => void;
 };
@@ -15,22 +20,60 @@ export function Column({
   canMoveLeft,
   canMoveRight,
   onAddTask,
+  onDropTask,
   onMoveTaskLeft,
   onMoveTaskRight,
 }: ColumnProps) {
+  const [isDropTarget, setIsDropTarget] = useState(false);
+
+  function handleDragOver(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setIsDropTarget(true);
+  }
+
+  function handleDragLeave(event: DragEvent<HTMLElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setIsDropTarget(false);
+    }
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    setIsDropTarget(false);
+
+    const taskId = event.dataTransfer.getData("text/task-id");
+    const sourceColumnId = event.dataTransfer.getData("text/task-column-id");
+
+    if (!taskId || !sourceColumnId) {
+      return;
+    }
+
+    onDropTask(taskId, sourceColumnId);
+  }
+
   return (
-    <section className="flex min-h-80 flex-col rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <section
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`flex min-h-80 flex-col rounded-[1.75rem] border p-4 shadow-[0_20px_45px_rgba(148,163,184,0.12)] transition ${
+        isDropTarget
+          ? "border-[var(--brand)] bg-white/90 ring-4 ring-[var(--brand-soft)]"
+          : "border-white/65 bg-[var(--surface)]"
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-medium text-zinc-900">{column.name}</h3>
-          <p className="mt-2 text-sm text-zinc-500">
+          <h3 className="text-lg font-medium tracking-tight text-slate-900">{column.name}</h3>
+          <p className="mt-2 text-sm text-slate-500">
             {column.tasks.length} tasks in this column
           </p>
         </div>
         <button
           type="button"
           onClick={onAddTask}
-          className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white"
+          className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[var(--brand-strong)] shadow-[0_8px_20px_rgba(91,77,248,0.12)] hover:bg-white"
         >
           Add task
         </button>
@@ -42,6 +85,7 @@ export function Column({
             <TaskCard
               key={task.id}
               task={task}
+              columnId={column.id}
               canMoveLeft={canMoveLeft}
               canMoveRight={canMoveRight}
               onMoveLeft={() => onMoveTaskLeft(task.id)}
@@ -49,8 +93,8 @@ export function Column({
             />
           ))
         ) : (
-          <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50 p-6 text-center text-sm text-zinc-500">
-            No tasks here yet. Add one to get the board moving.
+          <div className="flex flex-1 items-center justify-center rounded-[1.25rem] border border-dashed border-[var(--line)] bg-white/55 p-6 text-center text-sm text-slate-500">
+            Drop a task here, or add one to get the board moving.
           </div>
         )}
       </div>

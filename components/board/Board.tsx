@@ -28,6 +28,21 @@ export function Board({ board }: BoardProps) {
     [activeBoard.columns],
   );
 
+  async function persistTaskMove(taskId: string, newColumnId: string) {
+    const response = await fetch("/api/tasks", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        taskId,
+        newColumnId,
+      }),
+    });
+
+    return response;
+  }
+
   async function handleCreateTask(values: {
     title: string;
     description: string;
@@ -85,16 +100,36 @@ export function Board({ board }: BoardProps) {
     const snapshot = activeBoard;
     moveTask(taskId, targetColumn.id);
 
-    const response = await fetch("/api/tasks", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        taskId,
-        newColumnId: targetColumn.id,
-      }),
-    });
+    const response = await persistTaskMove(taskId, targetColumn.id);
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as
+        | { message?: string }
+        | null;
+
+      replaceBoard(snapshot);
+      setStatusMessage(payload?.message ?? "Task move failed, so we rolled the board back.");
+      return;
+    }
+
+    setStatusMessage(`Moved task to ${targetColumn.name}.`);
+  }
+
+  async function handleDropTask(taskId: string, sourceColumnId: string, targetColumnId: string) {
+    if (sourceColumnId === targetColumnId) {
+      return;
+    }
+
+    const targetColumn = activeBoard.columns.find((column) => column.id === targetColumnId);
+
+    if (!targetColumn) {
+      return;
+    }
+
+    const snapshot = activeBoard;
+    moveTask(taskId, targetColumnId);
+
+    const response = await persistTaskMove(taskId, targetColumnId);
 
     if (!response.ok) {
       const payload = (await response.json().catch(() => null)) as
@@ -112,15 +147,15 @@ export function Board({ board }: BoardProps) {
   return (
     <>
       <section className="space-y-4">
-        <div className="flex flex-col gap-4 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-[var(--surface-strong)] p-6 shadow-[var(--shadow)] md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
+            <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--brand-strong)]">
               Active board
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-zinc-900">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
               {activeBoard.name}
             </h2>
-            <p className="mt-2 text-sm text-zinc-600">
+            <p className="mt-2 text-sm text-slate-600">
               {activeBoard.columns.length} columns and{" "}
               {activeBoard.columns.reduce(
                 (count, column) => count + column.tasks.length,
@@ -135,14 +170,14 @@ export function Board({ board }: BoardProps) {
               setSelectedColumnId(activeBoard.columns[0]?.id);
               setIsModalOpen(true);
             }}
-            className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white"
+            className="rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.28)] hover:-translate-y-0.5 hover:bg-[var(--brand-strong)]"
           >
             Add task
           </button>
         </div>
 
         {statusMessage ? (
-          <p className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
+          <p className="rounded-2xl border border-[var(--line)] bg-[var(--surface-strong)] px-4 py-3 text-sm text-slate-600 shadow-[0_12px_30px_rgba(148,163,184,0.08)]">
             {statusMessage}
           </p>
         ) : null}
@@ -158,6 +193,9 @@ export function Board({ board }: BoardProps) {
                 setSelectedColumnId(column.id);
                 setIsModalOpen(true);
               }}
+              onDropTask={(taskId, sourceColumnId) =>
+                handleDropTask(taskId, sourceColumnId, column.id)
+              }
               onMoveTaskLeft={(taskId) => handleMoveTask(taskId, column.id, -1)}
               onMoveTaskRight={(taskId) => handleMoveTask(taskId, column.id, 1)}
             />
