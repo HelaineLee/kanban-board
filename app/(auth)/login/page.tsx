@@ -8,6 +8,7 @@ type LoginPageProps = {
   searchParams: Promise<{
     callbackUrl?: string;
     registered?: string;
+    withdrawn?: string;
   }>;
 };
 
@@ -21,6 +22,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const callbackUrl = params.callbackUrl || "/boards";
   const registered = params.registered === "1";
+  const withdrawn = params.withdrawn === "1";
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
@@ -32,7 +34,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
           Sign in with the account you created for this workspace.
         </p>
-        <LoginForm callbackUrl={callbackUrl} registered={registered} />
+        <LoginForm callbackUrl={callbackUrl} registered={registered} withdrawn={withdrawn} />
         <p className="mt-4 text-sm text-[var(--text-secondary)]">
           Need an account?{" "}
           <Link href="/register" className="font-medium text-[var(--brand-strong)]">

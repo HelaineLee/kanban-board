@@ -3,11 +3,13 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
+import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isValidEmail } from "@/lib/validations";
 
 type ActionState = {
   error?: string;
+  success?: boolean;
 };
 
 const db = prisma as unknown as {
@@ -74,4 +76,76 @@ export async function registerUser(
   });
 
   redirect("/login?registered=1");
+}
+
+export async function withdrawUserAccount(
+  _previousState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await requireUser();
+  const password = String(formData.get("password") ?? "");
+  const confirmation = String(formData.get("confirmation") ?? "").trim();
+
+  if (!password) {
+    return {
+      error: "Please enter your password to confirm account deletion.",
+    };
+  }
+
+  if (confirmation !== "DELETE") {
+    return {
+      error: 'Type "DELETE" to confirm account withdrawal.',
+    };
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { id: user.id },
+  });
+
+  if (!existingUser) {
+    return {
+      error: "We could not find that account anymore. Please sign in again.",
+    };
+  }
+
+  const passwordMatches = await bcrypt.compare(password, existingUser.passwordHash);
+
+  if (!passwordMatches) {
+    return {
+      error: "That password does not match your account.",
+    };
+  }
+
+  await prisma.$transaction([
+    prisma.task.deleteMany({
+      where: {
+        column: {
+          board: {
+            userId: user.id,
+          },
+        },
+      },
+    }),
+    prisma.column.deleteMany({
+      where: {
+        board: {
+          userId: user.id,
+        },
+      },
+    }),
+    prisma.board.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    }),
+    prisma.user.delete({
+      where: {
+        id: user.id,
+      },
+    }),
+  ]);
+
+  return {
+    success: true,
+  };
 }

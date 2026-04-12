@@ -6,9 +6,10 @@ import { signIn } from "next-auth/react";
 type LoginFormProps = {
   callbackUrl: string;
   registered: boolean;
+  withdrawn: boolean;
 };
 
-export function LoginForm({ callbackUrl, registered }: LoginFormProps) {
+export function LoginForm({ callbackUrl, registered, withdrawn }: LoginFormProps) {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,6 +42,12 @@ export function LoginForm({ callbackUrl, registered }: LoginFormProps) {
       {registered ? (
         <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           Your account is ready. Sign in to open your boards.
+        </p>
+      ) : null}
+
+      {withdrawn ? (
+        <p className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
+          Your account has been deleted.
         </p>
       ) : null}
 
