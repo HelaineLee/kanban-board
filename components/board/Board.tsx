@@ -147,15 +147,15 @@ export function Board({ board }: BoardProps) {
   return (
     <>
       <section className="space-y-4">
-        <div className="flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-[var(--surface-strong)] p-6 shadow-[var(--shadow)] md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-4 rounded-[2rem] border border-[var(--line)] bg-[var(--surface-strong)] p-6 shadow-[var(--shadow)] md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--brand-strong)]">
               Active board
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
               {activeBoard.name}
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
               {activeBoard.columns.length} columns and{" "}
               {activeBoard.columns.reduce(
                 (count, column) => count + column.tasks.length,
@@ -177,7 +177,7 @@ export function Board({ board }: BoardProps) {
         </div>
 
         {statusMessage ? (
-          <p className="rounded-2xl border border-[var(--line)] bg-[var(--surface-strong)] px-4 py-3 text-sm text-slate-600 shadow-[0_12px_30px_rgba(148,163,184,0.08)]">
+          <p className="rounded-2xl border border-[var(--line)] bg-[var(--surface-strong)] px-4 py-3 text-sm text-[var(--text-secondary)] shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
             {statusMessage}
           </p>
         ) : null}

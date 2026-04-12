@@ -27,18 +27,18 @@ export function TaskCard({
         event.dataTransfer.setData("text/task-id", task.id);
         event.dataTransfer.setData("text/task-column-id", columnId);
       }}
-      className="cursor-grab rounded-[1.4rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,241,255,0.94))] p-4 shadow-[0_18px_32px_rgba(148,163,184,0.16)] active:cursor-grabbing"
+      className="cursor-grab rounded-[1.4rem] border border-[var(--line)] bg-[linear-gradient(180deg,var(--surface-card-strong),var(--surface-card))] p-4 shadow-[0_18px_32px_rgba(15,23,42,0.16)] active:cursor-grabbing"
     >
       <div className="flex items-start justify-between gap-3">
-        <h4 className="font-medium text-slate-900">{task.title}</h4>
+        <h4 className="font-medium text-[var(--text-primary)]">{task.title}</h4>
         <span className="rounded-full bg-[var(--brand-soft)] px-2 py-1 text-xs font-medium text-[var(--brand-strong)]">
           #{task.order}
         </span>
       </div>
       {task.description ? (
-        <p className="mt-2 text-sm leading-6 text-slate-600">{task.description}</p>
+        <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{task.description}</p>
       ) : (
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-[var(--text-muted)]">
           No description yet for this task.
         </p>
       )}
@@ -47,7 +47,7 @@ export function TaskCard({
           type="button"
           onClick={onMoveLeft}
           disabled={!canMoveLeft}
-          className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-full border border-[var(--line)] bg-[var(--surface-card)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           Move left
         </button>
@@ -55,7 +55,7 @@ export function TaskCard({
           type="button"
           onClick={onMoveRight}
           disabled={!canMoveRight}
-          className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-full border border-[var(--line)] bg-[var(--surface-card)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           Move right
         </button>

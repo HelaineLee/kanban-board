@@ -20,38 +20,38 @@ export function RegisterForm() {
       ) : null}
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-slate-700">Email</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">Email</span>
         <input
           required
           type="email"
           name="email"
           pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-          className="w-full rounded-2xl border border-[var(--line)] bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
+          className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="you@example.com"
           title="Please enter a valid email address, like you@example.com."
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-slate-700">Password</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">Password</span>
         <input
           required
           minLength={8}
           type="password"
           name="password"
-          className="w-full rounded-2xl border border-[var(--line)] bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
+          className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="At least 8 characters"
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-slate-700">Confirm password</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">Confirm password</span>
         <input
           required
           minLength={8}
           type="password"
           name="confirmPassword"
-          className="w-full rounded-2xl border border-[var(--line)] bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
+          className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="Repeat your password"
         />
       </label>

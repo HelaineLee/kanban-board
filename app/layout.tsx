@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { Navbar } from "@/components/common/Navbar";
+import { ThemeProvider } from "@/components/common/ThemeProvider";
 
 import "./globals.css";
 
@@ -20,21 +22,29 @@ export const metadata: Metadata = {
   description: "Collaborative kanban workspace built with Next.js and Prisma.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const storedTheme = cookieStore.get("theme")?.value;
+  const initialTheme = storedTheme === "dark" ? "dark" : "light";
+
   return (
     <html
       lang="en"
+      data-theme={initialTheme}
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full text-slate-800">
-        <div className="flex min-h-full flex-col">
-          <Navbar />
-          {children}
-        </div>
+      <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
+        <ThemeProvider initialTheme={initialTheme}>
+          <div className="flex min-h-full flex-col">
+            <Navbar />
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

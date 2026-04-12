@@ -33,9 +33,9 @@ export function AddTaskModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/30 p-6 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-[var(--overlay)] p-6 backdrop-blur-sm">
       <form
-        className="w-full max-w-md rounded-[2rem] border border-white/70 bg-[var(--surface-strong)] p-6 shadow-[var(--shadow)]"
+        className="w-full max-w-md rounded-[2rem] border border-[var(--line)] bg-[var(--surface-strong)] p-6 shadow-[var(--shadow)]"
         onSubmit={async (event) => {
           event.preventDefault();
 
@@ -50,38 +50,38 @@ export function AddTaskModal({
           });
         }}
       >
-        <h2 className="text-xl font-semibold tracking-tight text-slate-900">Add task</h2>
-        <p className="mt-2 text-sm text-slate-600">
+        <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">Add task</h2>
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">
           Create a task and place it directly in the right column.
         </p>
 
-        <label className="mt-4 block text-sm font-medium text-slate-700">
+        <label className="mt-4 block text-sm font-medium text-[var(--text-secondary)]">
           Title
         </label>
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          className="mt-2 w-full rounded-xl border border-[var(--line)] bg-white/80 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
+          className="mt-2 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="Ship board detail view"
         />
 
-        <label className="mt-4 block text-sm font-medium text-slate-700">
+        <label className="mt-4 block text-sm font-medium text-[var(--text-secondary)]">
           Description
         </label>
         <textarea
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          className="mt-2 min-h-28 w-full rounded-xl border border-[var(--line)] bg-white/80 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
+          className="mt-2 min-h-28 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="Add a little context for teammates."
         />
 
-        <label className="mt-4 block text-sm font-medium text-slate-700">
+        <label className="mt-4 block text-sm font-medium text-[var(--text-secondary)]">
           Column
         </label>
         <select
           value={columnId}
           onChange={(event) => setColumnId(event.target.value)}
-          className="mt-2 w-full rounded-xl border border-[var(--line)] bg-white/80 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
+          className="mt-2 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
         >
           {columns.map((column) => (
             <option key={column.id} value={column.id}>
@@ -94,7 +94,7 @@ export function AddTaskModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-[var(--line)] bg-white/70 px-4 py-2 text-sm font-medium text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
+            className="rounded-full border border-[var(--line)] bg-[var(--surface-card)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
           >
             Cancel
           </button>

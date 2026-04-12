@@ -57,23 +57,23 @@ export function Column({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`flex min-h-80 flex-col rounded-[1.75rem] border p-4 shadow-[0_20px_45px_rgba(148,163,184,0.12)] transition ${
+      className={`flex min-h-80 flex-col rounded-[1.75rem] border p-4 shadow-[0_20px_45px_rgba(15,23,42,0.12)] transition ${
         isDropTarget
-          ? "border-[var(--brand)] bg-white/90 ring-4 ring-[var(--brand-soft)]"
-          : "border-white/65 bg-[var(--surface)]"
+          ? "border-[var(--brand)] bg-[var(--surface-card-strong)] ring-4 ring-[var(--brand-soft)]"
+          : "border-[var(--line)] bg-[var(--surface)]"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-medium tracking-tight text-slate-900">{column.name}</h3>
-          <p className="mt-2 text-sm text-slate-500">
+          <h3 className="text-lg font-medium tracking-tight text-[var(--text-primary)]">{column.name}</h3>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">
             {column.tasks.length} tasks in this column
           </p>
         </div>
         <button
           type="button"
           onClick={onAddTask}
-          className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[var(--brand-strong)] shadow-[0_8px_20px_rgba(91,77,248,0.12)] hover:bg-white"
+          className="rounded-full bg-[var(--surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--brand-strong)] shadow-[0_8px_20px_rgba(91,77,248,0.12)] hover:bg-[var(--surface-card)]"
         >
           Add task
         </button>
@@ -93,7 +93,7 @@ export function Column({
             />
           ))
         ) : (
-          <div className="flex flex-1 items-center justify-center rounded-[1.25rem] border border-dashed border-[var(--line)] bg-white/55 p-6 text-center text-sm text-slate-500">
+          <div className="flex flex-1 items-center justify-center rounded-[1.25rem] border border-dashed border-[var(--line)] bg-[var(--surface-card)] p-6 text-center text-sm text-[var(--text-muted)]">
             Drop a task here, or add one to get the board moving.
           </div>
         )}

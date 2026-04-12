@@ -11,7 +11,7 @@ export default function BoardError({ error, reset }: BoardErrorProps) {
       <h2 className="text-2xl font-semibold text-red-700">
         Unable to load board
       </h2>
-      <p className="text-sm text-slate-600">{error.message}</p>
+      <p className="text-sm text-[var(--text-secondary)]">{error.message}</p>
       <button
         type="button"
         onClick={reset}

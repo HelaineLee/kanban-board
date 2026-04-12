@@ -1,24 +1,26 @@
 import Link from "next/link";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function Navbar() {
   const user = await getCurrentUser();
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-white/60 bg-[var(--surface)] px-6 py-4 backdrop-blur-xl">
+    <nav className="sticky top-0 z-20 border-b border-[var(--line)] bg-[var(--surface)] px-6 py-4 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight text-slate-900">
+        <Link href="/" className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
           Kanban Bloom
         </Link>
-        <div className="flex items-center gap-4 text-sm text-slate-600">
+        <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
+          <ThemeToggle />
           <Link href="/boards" className="hover:text-[var(--brand-strong)]">
             Boards
           </Link>
           {user ? (
             <>
-              <span className="hidden rounded-full bg-[var(--brand-soft)] px-3 py-1 text-slate-700 sm:inline">
+              <span className="hidden rounded-full bg-[var(--brand-soft)] px-3 py-1 text-[var(--text-secondary)] sm:inline">
                 {user.email}
               </span>
               <SignOutButton />
