@@ -6,7 +6,7 @@ const globalForPrisma = globalThis as typeof globalThis & {
   prisma?: PrismaClient;
 };
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const pool = new Pool({ connectionString: process.env.POSTGRES_PRISMA_URL })
 const adapter = new PrismaPg(pool)
 
 export const prisma =
