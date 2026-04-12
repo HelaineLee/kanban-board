@@ -33,6 +33,22 @@ Realtime Layer (Pusher / WebSocket)
 
 ## ⚙️ Tech Stack
 
+## Architecture Style
+
+This project is best described as a **feature-based vertical slice architecture** built on top of **Next.js App Router**, with **layered separation of concerns** inside each slice.
+
+In practice, that means:
+
+* `app/` handles routing and page composition
+* `components/` contains reusable presentation/UI pieces
+* `features/` groups board/task logic by business capability
+* `server/` contains server actions and server-side application logic
+* `lib/` and `prisma/` provide infrastructure concerns such as auth, database, validation, and realtime wiring
+
+It is **not** a classic MVC structure, and it is **not** strict textbook Clean Architecture with explicit ports/adapters everywhere. It is closer to a pragmatic, modular Next.js architecture that combines **vertical slices** with **clean layering**.
+
+---
+
 | Layer      | Technology              | Reason                        |
 | ---------- | ----------------------- | ----------------------------- |
 | Framework  | Next.js 16 (App Router) | Modern SSR + RSC architecture |
