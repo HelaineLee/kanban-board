@@ -51,23 +51,23 @@ export function LoginForm({ callbackUrl, registered }: LoginFormProps) {
       ) : null}
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-zinc-700">Email</span>
+        <span className="text-sm font-medium text-slate-700">Email</span>
         <input
           required
           type="email"
           name="email"
-          className="w-full rounded-2xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400"
+          className="w-full rounded-2xl border border-[var(--line)] bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="you@example.com"
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-zinc-700">Password</span>
+        <span className="text-sm font-medium text-slate-700">Password</span>
         <input
           required
           type="password"
           name="password"
-          className="w-full rounded-2xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400"
+          className="w-full rounded-2xl border border-[var(--line)] bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="At least 8 characters"
         />
       </label>
@@ -75,7 +75,7 @@ export function LoginForm({ callbackUrl, registered }: LoginFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.24)] hover:bg-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Signing in..." : "Sign in"}
       </button>

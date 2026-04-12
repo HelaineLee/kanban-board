@@ -11,11 +11,11 @@ export default function BoardError({ error, reset }: BoardErrorProps) {
       <h2 className="text-2xl font-semibold text-red-700">
         Unable to load board
       </h2>
-      <p className="text-sm text-zinc-600">{error.message}</p>
+      <p className="text-sm text-slate-600">{error.message}</p>
       <button
         type="button"
         onClick={reset}
-        className="w-fit rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+        className="w-fit rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--brand-strong)]"
       >
         Try again
       </button>

@@ -24,15 +24,18 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <section className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-semibold text-zinc-900">Login</h1>
-        <p className="mt-2 text-sm text-zinc-600">
+      <section className="w-full max-w-md rounded-[2rem] border border-white/70 bg-[var(--surface-strong)] p-8 shadow-[var(--shadow)]">
+        <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--brand-strong)]">
+          Welcome back
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">Login</h1>
+        <p className="mt-2 text-sm text-slate-600">
           Sign in with the account you created for this workspace.
         </p>
         <LoginForm callbackUrl={callbackUrl} registered={registered} />
-        <p className="mt-4 text-sm text-zinc-600">
+        <p className="mt-4 text-sm text-slate-600">
           Need an account?{" "}
-          <Link href="/register" className="font-medium text-zinc-900">
+          <Link href="/register" className="font-medium text-[var(--brand-strong)]">
             Register here
           </Link>
           .

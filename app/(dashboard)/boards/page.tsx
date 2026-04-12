@@ -10,9 +10,12 @@ export default async function BoardsPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-6">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold text-zinc-900">Boards</h1>
-        <p className="text-sm text-zinc-600">
+      <header className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.12)]">
+        <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--brand-strong)]">
+          Dashboard
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Boards</h1>
+        <p className="mt-2 text-sm text-slate-600">
           Open a board to review work, move tasks, and keep momentum visible.
         </p>
       </header>
@@ -25,17 +28,17 @@ export default async function BoardsPage() {
             <Link
               key={board.id}
               href={`/boards/${board.id}`}
-              className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-zinc-300"
+              className="rounded-[1.6rem] border border-white/70 bg-[var(--surface-strong)] p-5 shadow-[0_18px_34px_rgba(148,163,184,0.12)] transition hover:-translate-y-0.5 hover:border-[var(--line)]"
             >
-              <h2 className="text-lg font-medium text-zinc-900">{board.name}</h2>
-              <p className="mt-1 text-sm text-zinc-600">
+              <h2 className="text-lg font-medium text-slate-900">{board.name}</h2>
+              <p className="mt-1 text-sm text-slate-600">
                 {board.columnCount} columns and {board.taskCount} tasks
               </p>
             </Link>
           ))}
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-zinc-300 bg-white px-6 py-10 text-sm text-zinc-600">
+        <div className="rounded-3xl border border-dashed border-[var(--line)] bg-[var(--surface)] px-6 py-10 text-sm text-slate-600">
           No boards yet. Create your first board above to start planning work.
         </div>
       )}

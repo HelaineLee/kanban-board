@@ -13,15 +13,18 @@ export default async function RegisterPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <section className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-semibold text-zinc-900">Register</h1>
-        <p className="mt-2 text-sm text-zinc-600">
+      <section className="w-full max-w-md rounded-[2rem] border border-white/70 bg-[var(--surface-strong)] p-8 shadow-[var(--shadow)]">
+        <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--brand-strong)]">
+          Welcome
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">Register</h1>
+        <p className="mt-2 text-sm text-slate-600">
           Create an account so your boards belong to you instead of the demo user.
         </p>
         <RegisterForm />
-        <p className="mt-4 text-sm text-zinc-600">
+        <p className="mt-4 text-sm text-slate-600">
           Already registered?{" "}
-          <Link href="/login" className="font-medium text-zinc-900">
+          <Link href="/login" className="font-medium text-[var(--brand-strong)]">
             Sign in
           </Link>
           .
