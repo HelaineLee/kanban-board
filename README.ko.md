@@ -2,6 +2,8 @@
 
 [English version](./README.md)
 
+[사이트 바로가기](https://kanban-board-virid-ten.vercel.app/)
+
 ## 프로젝트 개요
 
 > 이 프로젝트는 [코덱스](https://openai.com/codex/)를 활용하여 바이브 코딩으로 제작되었습니다.

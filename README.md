@@ -1,5 +1,9 @@
 # 🧠 Shared Kanban Board — Architecture Overview
 
+[Korean version](./README.ko.md)
+
+[Go To Website](https://kanban-board-virid-ten.vercel.app/)
+
 ## 📌 Project Overview
 
 > This project was created using Vibe coding with [Codex](https://openai.com/codex/)
@@ -354,4 +358,3 @@ npm run dev
 ## 📬 Feedback
 
 If you have suggestions or improvements, feel free to open an issue or PR.
-[Korean version](./README.ko.md)
