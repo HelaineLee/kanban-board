@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
+import { useLanguage } from "@/components/common/LanguageProvider";
 import { createBoardFromForm } from "@/server/actions/board.actions";
 
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
 export function CreateBoardForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
+  const { dictionary } = useLanguage();
   const [state, formAction, isPending] = useActionState(createBoardFromForm, initialState);
 
   useEffect(() => {
@@ -34,31 +36,32 @@ export function CreateBoardForm() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-xl space-y-2">
           <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--brand-strong)]">
-            Create a board
+            {dictionary.boards.createBoard}
           </p>
           <h2 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
-            Start a fresh workspace for your team
+            {dictionary.boards.createBoardTitle}
           </h2>
           <p className="text-sm leading-6 text-[var(--text-secondary)]">
-            Give the board a name and we&apos;ll set it up with Backlog, In Progress,
-            and Done so you can begin organizing work right away.
+            {dictionary.boards.createBoardDescription}
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--line)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-secondary)]">
-          New boards open with 3 default columns and are available from this page immediately.
+          {dictionary.boards.newBoardsNotice}
         </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-start">
         <label className="flex-1 space-y-2">
-          <span className="text-sm font-medium text-[var(--text-secondary)]">Board name</span>
+          <span className="text-sm font-medium text-[var(--text-secondary)]">
+            {dictionary.boards.boardName}
+          </span>
           <input
             required
             maxLength={80}
             name="name"
             className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-            placeholder="Q2 planning"
+            placeholder={dictionary.boards.boardNamePlaceholder}
           />
         </label>
 
@@ -67,7 +70,9 @@ export function CreateBoardForm() {
           disabled={isPending}
           className="mt-7 rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.24)] transition hover:-translate-y-0.5 hover:bg-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending ? "Creating board..." : "Create board"}
+          {isPending
+            ? dictionary.boards.createBoardSubmitting
+            : dictionary.boards.createBoardButton}
         </button>
       </div>
 

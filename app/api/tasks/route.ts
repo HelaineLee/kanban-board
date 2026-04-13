@@ -1,15 +1,17 @@
 import { getTasks } from "@/features/task/task.service";
 import { getCurrentUser } from "@/lib/auth";
+import { getDictionary } from "@/lib/i18n/server";
 import {
   createTask,
   moveTask,
 } from "@/server/actions/task.actions";
 
 export async function GET(request: Request) {
+  const { dictionary } = await getDictionary();
   const user = await getCurrentUser();
 
   if (!user) {
-    return Response.json({ message: "Unauthorized" }, { status: 401 });
+    return Response.json({ message: dictionary.errors.unauthorized }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -17,16 +19,17 @@ export async function GET(request: Request) {
   const tasks = await getTasks(boardId, user.id);
 
   return Response.json({
-    message: "Tasks loaded",
+    message: dictionary.errors.tasksLoaded,
     data: tasks,
   });
 }
 
 export async function POST(request: Request) {
+  const { dictionary } = await getDictionary();
   const user = await getCurrentUser();
 
   if (!user) {
-    return Response.json({ message: "Unauthorized" }, { status: 401 });
+    return Response.json({ message: dictionary.errors.unauthorized }, { status: 401 });
   }
 
   const body = (await request.json()) as {
@@ -43,21 +46,22 @@ export async function POST(request: Request) {
     );
 
     return Response.json({
-      message: "Task created",
+      message: dictionary.errors.taskCreated,
       data: task,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create task.";
+    const message = error instanceof Error ? error.message : dictionary.errors.failedToCreateTask;
 
     return Response.json({ message }, { status: 400 });
   }
 }
 
 export async function PATCH(request: Request) {
+  const { dictionary } = await getDictionary();
   const user = await getCurrentUser();
 
   if (!user) {
-    return Response.json({ message: "Unauthorized" }, { status: 401 });
+    return Response.json({ message: dictionary.errors.unauthorized }, { status: 401 });
   }
 
   const body = (await request.json()) as {
@@ -69,11 +73,11 @@ export async function PATCH(request: Request) {
     const task = await moveTask(body.taskId ?? "", body.newColumnId ?? "");
 
     return Response.json({
-      message: "Task moved",
+      message: dictionary.errors.taskMoved,
       data: task,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to move task.";
+    const message = error instanceof Error ? error.message : dictionary.errors.failedToMoveTask;
 
     return Response.json({ message }, { status: 400 });
   }

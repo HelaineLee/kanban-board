@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 
+import { useLanguage } from "@/components/common/LanguageProvider";
 import { registerUser } from "@/server/actions/auth.actions";
 
 const initialState = {
@@ -9,6 +10,7 @@ const initialState = {
 };
 
 export function RegisterForm() {
+  const { dictionary } = useLanguage();
   const [state, formAction, isPending] = useActionState(registerUser, initialState);
 
   return (
@@ -20,7 +22,9 @@ export function RegisterForm() {
       ) : null}
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-[var(--text-secondary)]">Email</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
+          {dictionary.common.email}
+        </span>
         <input
           required
           type="email"
@@ -28,31 +32,35 @@ export function RegisterForm() {
           pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
           className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
           placeholder="you@example.com"
-          title="Please enter a valid email address, like you@example.com."
+          title={dictionary.auth.validEmailTitle}
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-[var(--text-secondary)]">Password</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
+          {dictionary.common.password}
+        </span>
         <input
           required
           minLength={8}
           type="password"
           name="password"
           className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-          placeholder="At least 8 characters"
+          placeholder={dictionary.auth.passwordMinLength}
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-[var(--text-secondary)]">Confirm password</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
+          {dictionary.auth.confirmPassword}
+        </span>
         <input
           required
           minLength={8}
           type="password"
           name="confirmPassword"
           className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-          placeholder="Repeat your password"
+          placeholder={dictionary.auth.repeatPassword}
         />
       </label>
 
@@ -61,7 +69,7 @@ export function RegisterForm() {
         disabled={isPending}
         className="w-full rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.24)] hover:bg-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isPending ? "Creating account..." : "Create account"}
+        {isPending ? dictionary.auth.createAccountSubmitting : dictionary.auth.createAccount}
       </button>
     </form>
   );

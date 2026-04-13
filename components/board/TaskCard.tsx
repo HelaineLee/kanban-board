@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/components/common/LanguageProvider";
 import type { TaskRecord } from "@/features/task/task.types";
 
 type TaskCardProps = {
@@ -19,6 +20,8 @@ export function TaskCard({
   onMoveLeft,
   onMoveRight,
 }: TaskCardProps) {
+  const { dictionary } = useLanguage();
+
   return (
     <article
       draggable
@@ -39,7 +42,7 @@ export function TaskCard({
         <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{task.description}</p>
       ) : (
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          No description yet for this task.
+          {dictionary.boards.noDescriptionYet}
         </p>
       )}
       <div className="mt-4 flex gap-2">
@@ -49,7 +52,7 @@ export function TaskCard({
           disabled={!canMoveLeft}
           className="rounded-full border border-[var(--line)] bg-[var(--surface-card)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Move left
+          {dictionary.boards.moveLeft}
         </button>
         <button
           type="button"
@@ -57,7 +60,7 @@ export function TaskCard({
           disabled={!canMoveRight}
           className="rounded-full border border-[var(--line)] bg-[var(--surface-card)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Move right
+          {dictionary.boards.moveRight}
         </button>
       </div>
     </article>

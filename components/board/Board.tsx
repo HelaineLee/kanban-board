@@ -4,15 +4,18 @@ import { useMemo, useState } from "react";
 
 import { AddTaskModal } from "@/components/board/AddTaskModal";
 import { Column } from "@/components/board/Column";
+import { useLanguage } from "@/components/common/LanguageProvider";
 import { useBoard } from "@/features/board/board.hooks";
 import { useBoardStore } from "@/features/board/board.store";
 import type { BoardRecord } from "@/features/board/board.types";
+import { formatMessage } from "@/lib/i18n";
 
 type BoardProps = {
   board: BoardRecord;
 };
 
 export function Board({ board }: BoardProps) {
+  const { dictionary } = useLanguage();
   const activeBoard = useBoard(board.id, board);
   const addTask = useBoardStore((state) => state.addTask);
   const moveTask = useBoardStore((state) => state.moveTask);
@@ -61,7 +64,7 @@ export function Board({ board }: BoardProps) {
         | { message?: string }
         | null;
 
-      setStatusMessage(payload?.message ?? "We couldn't save that task yet. Please try again.");
+      setStatusMessage(payload?.message ?? dictionary.boards.createTaskFailed);
       return;
     }
 
@@ -76,7 +79,7 @@ export function Board({ board }: BoardProps) {
     };
 
     addTask(values.columnId, payload.data);
-    setStatusMessage(`Added "${values.title}" to the board.`);
+    setStatusMessage(formatMessage(dictionary.boards.addedTask, { title: values.title }));
     setIsModalOpen(false);
   }
 
@@ -108,11 +111,13 @@ export function Board({ board }: BoardProps) {
         | null;
 
       replaceBoard(snapshot);
-      setStatusMessage(payload?.message ?? "Task move failed, so we rolled the board back.");
+      setStatusMessage(payload?.message ?? dictionary.boards.taskMoveFailed);
       return;
     }
 
-    setStatusMessage(`Moved task to ${targetColumn.name}.`);
+    setStatusMessage(
+      formatMessage(dictionary.boards.movedTask, { columnName: targetColumn.name }),
+    );
   }
 
   async function handleDropTask(taskId: string, sourceColumnId: string, targetColumnId: string) {
@@ -137,11 +142,13 @@ export function Board({ board }: BoardProps) {
         | null;
 
       replaceBoard(snapshot);
-      setStatusMessage(payload?.message ?? "Task move failed, so we rolled the board back.");
+      setStatusMessage(payload?.message ?? dictionary.boards.taskMoveFailed);
       return;
     }
 
-    setStatusMessage(`Moved task to ${targetColumn.name}.`);
+    setStatusMessage(
+      formatMessage(dictionary.boards.movedTask, { columnName: targetColumn.name }),
+    );
   }
 
   return (
@@ -150,18 +157,19 @@ export function Board({ board }: BoardProps) {
         <div className="flex flex-col gap-4 rounded-[2rem] border border-[var(--line)] bg-[var(--surface-strong)] p-6 shadow-[var(--shadow)] md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--brand-strong)]">
-              Active board
+              {dictionary.boards.activeBoard}
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
               {activeBoard.name}
             </h2>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              {activeBoard.columns.length} columns and{" "}
-              {activeBoard.columns.reduce(
-                (count, column) => count + column.tasks.length,
-                0,
-              )}{" "}
-              tasks
+              {formatMessage(dictionary.boards.boardSummary, {
+                columns: activeBoard.columns.length,
+                tasks: activeBoard.columns.reduce(
+                  (count, column) => count + column.tasks.length,
+                  0,
+                ),
+              })}
             </p>
           </div>
           <button
@@ -172,7 +180,7 @@ export function Board({ board }: BoardProps) {
             }}
             className="rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.28)] hover:-translate-y-0.5 hover:bg-[var(--brand-strong)]"
           >
-            Add task
+            {dictionary.common.addTask}
           </button>
         </div>
 

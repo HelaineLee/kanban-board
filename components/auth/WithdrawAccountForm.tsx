@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { signOut } from "next-auth/react";
 
+import { useLanguage } from "@/components/common/LanguageProvider";
 import { withdrawUserAccount } from "@/server/actions/auth.actions";
 
 const initialState = {
@@ -11,6 +12,7 @@ const initialState = {
 };
 
 export function WithdrawAccountForm() {
+  const { dictionary } = useLanguage();
   const [state, formAction, isPending] = useActionState(withdrawUserAccount, initialState);
   const hasSignedOut = useRef(false);
 
@@ -32,26 +34,30 @@ export function WithdrawAccountForm() {
       ) : null}
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-[var(--text-secondary)]">Current password</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
+          {dictionary.common.currentPassword}
+        </span>
         <input
           required
           type="password"
           name="password"
           autoComplete="current-password"
           className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-100"
-          placeholder="Enter your password"
+          placeholder={dictionary.auth.enterPasswordPlaceholder}
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-[var(--text-secondary)]">Type DELETE to confirm</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
+          {dictionary.auth.confirmDeleteLabel}
+        </span>
         <input
           required
           type="text"
           name="confirmation"
           autoComplete="off"
           className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-100"
-          placeholder="DELETE"
+          placeholder={dictionary.auth.confirmDeletePlaceholder}
         />
       </label>
 
@@ -60,7 +66,7 @@ export function WithdrawAccountForm() {
         disabled={isPending}
         className="rounded-full bg-rose-600 px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(225,29,72,0.24)] transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isPending ? "Deleting account..." : "Delete account"}
+        {isPending ? dictionary.auth.deletingAccount : dictionary.auth.deleteAccount}
       </button>
     </form>
   );

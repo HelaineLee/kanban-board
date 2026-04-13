@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { LanguageProvider } from "@/components/common/LanguageProvider";
 import { Navbar } from "@/components/common/Navbar";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
+import { defaultLocale, isLocale } from "@/lib/i18n";
+import { dictionaries } from "@/lib/i18n/dictionaries";
 
 import "./globals.css";
 
@@ -17,10 +20,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Kanban Board",
-  description: "Collaborative kanban workspace built with Next.js and Prisma.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const storedLocale = cookieStore.get("locale")?.value;
+  const locale = isLocale(storedLocale) ? storedLocale : defaultLocale;
+  const dictionary = dictionaries[locale];
+
+  return {
+    title: dictionary.meta.title,
+    description: dictionary.meta.description,
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -29,22 +39,26 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const storedTheme = cookieStore.get("theme")?.value;
+  const storedLocale = cookieStore.get("locale")?.value;
   const initialTheme = storedTheme === "dark" ? "dark" : "light";
+  const initialLocale = isLocale(storedLocale) ? storedLocale : defaultLocale;
 
   return (
     <html
-      lang="en"
+      lang={initialLocale}
       data-theme={initialTheme}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
-        <ThemeProvider initialTheme={initialTheme}>
-          <div className="flex min-h-full flex-col">
-            <Navbar />
-            {children}
-          </div>
-        </ThemeProvider>
+        <LanguageProvider initialLocale={initialLocale}>
+          <ThemeProvider initialTheme={initialTheme}>
+            <div className="flex min-h-full flex-col">
+              <Navbar />
+              {children}
+            </div>
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

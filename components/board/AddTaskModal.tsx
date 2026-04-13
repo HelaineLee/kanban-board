@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useLanguage } from "@/components/common/LanguageProvider";
+
 type AddTaskModalProps = {
   columns: Array<{
     id: string;
@@ -24,6 +26,7 @@ export function AddTaskModal({
   onSubmit,
   open = false,
 }: AddTaskModalProps) {
+  const { dictionary } = useLanguage();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [columnId, setColumnId] = useState(defaultColumnId ?? columns[0]?.id ?? "");
@@ -50,33 +53,35 @@ export function AddTaskModal({
           });
         }}
       >
-        <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">Add task</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">
+          {dictionary.common.addTask}
+        </h2>
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          Create a task and place it directly in the right column.
+          {dictionary.boards.addTaskDescription}
         </p>
 
         <label className="mt-4 block text-sm font-medium text-[var(--text-secondary)]">
-          Title
+          {dictionary.common.title}
         </label>
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           className="mt-2 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-          placeholder="Ship board detail view"
+          placeholder={dictionary.boards.taskTitlePlaceholder}
         />
 
         <label className="mt-4 block text-sm font-medium text-[var(--text-secondary)]">
-          Description
+          {dictionary.common.description}
         </label>
         <textarea
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           className="mt-2 min-h-28 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-          placeholder="Add a little context for teammates."
+          placeholder={dictionary.boards.taskDescriptionPlaceholder}
         />
 
         <label className="mt-4 block text-sm font-medium text-[var(--text-secondary)]">
-          Column
+          {dictionary.common.column}
         </label>
         <select
           value={columnId}
@@ -96,13 +101,13 @@ export function AddTaskModal({
             onClick={onClose}
             className="rounded-full border border-[var(--line)] bg-[var(--surface-card)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
           >
-            Cancel
+            {dictionary.common.cancel}
           </button>
           <button
             type="submit"
             className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--brand-strong)]"
           >
-            Save task
+            {dictionary.common.saveTask}
           </button>
         </div>
       </form>

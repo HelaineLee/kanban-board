@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
 import { requireUser } from "@/lib/auth";
+import { getDictionary } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { isValidEmail } from "@/lib/validations";
 
@@ -28,31 +29,32 @@ export async function registerUser(
   _previousState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const { dictionary } = await getDictionary();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
   if (!email || !password || !confirmPassword) {
     return {
-      error: "Email, password, and confirmation are required.",
+      error: dictionary.errors.emailPasswordConfirmationRequired,
     };
   }
 
   if (!isValidEmail(email)) {
     return {
-      error: "Please enter a valid email address.",
+      error: dictionary.errors.validEmailRequired,
     };
   }
 
   if (password.length < 8) {
     return {
-      error: "Password must be at least 8 characters long.",
+      error: dictionary.errors.passwordMinLength,
     };
   }
 
   if (password !== confirmPassword) {
     return {
-      error: "Password confirmation does not match.",
+      error: dictionary.errors.passwordConfirmationMismatch,
     };
   }
 
@@ -62,7 +64,7 @@ export async function registerUser(
 
   if (existingUser) {
     return {
-      error: "That email is already registered.",
+      error: dictionary.errors.emailAlreadyRegistered,
     };
   }
 
@@ -82,19 +84,20 @@ export async function withdrawUserAccount(
   _previousState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const { dictionary } = await getDictionary();
   const user = await requireUser();
   const password = String(formData.get("password") ?? "");
   const confirmation = String(formData.get("confirmation") ?? "").trim();
 
   if (!password) {
     return {
-      error: "Please enter your password to confirm account deletion.",
+      error: dictionary.errors.passwordRequiredForDeletion,
     };
   }
 
   if (confirmation !== "DELETE") {
     return {
-      error: 'Type "DELETE" to confirm account withdrawal.',
+      error: dictionary.errors.deleteConfirmationRequired,
     };
   }
 
@@ -104,7 +107,7 @@ export async function withdrawUserAccount(
 
   if (!existingUser) {
     return {
-      error: "We could not find that account anymore. Please sign in again.",
+      error: dictionary.errors.accountNotFound,
     };
   }
 
@@ -112,7 +115,7 @@ export async function withdrawUserAccount(
 
   if (!passwordMatches) {
     return {
-      error: "That password does not match your account.",
+      error: dictionary.errors.passwordMismatch,
     };
   }
 

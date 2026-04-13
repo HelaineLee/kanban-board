@@ -3,7 +3,9 @@
 import { useState, type DragEvent } from "react";
 
 import { TaskCard } from "@/components/board/TaskCard";
+import { useLanguage } from "@/components/common/LanguageProvider";
 import type { ColumnRecord } from "@/features/board/board.types";
+import { formatMessage } from "@/lib/i18n";
 
 type ColumnProps = {
   column: ColumnRecord;
@@ -24,6 +26,7 @@ export function Column({
   onMoveTaskLeft,
   onMoveTaskRight,
 }: ColumnProps) {
+  const { dictionary } = useLanguage();
   const [isDropTarget, setIsDropTarget] = useState(false);
 
   function handleDragOver(event: DragEvent<HTMLElement>) {
@@ -67,7 +70,7 @@ export function Column({
         <div>
           <h3 className="text-lg font-medium tracking-tight text-[var(--text-primary)]">{column.name}</h3>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
-            {column.tasks.length} tasks in this column
+            {formatMessage(dictionary.boards.columnSummary, { count: column.tasks.length })}
           </p>
         </div>
         <button
@@ -75,7 +78,7 @@ export function Column({
           onClick={onAddTask}
           className="rounded-full bg-[var(--surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--brand-strong)] shadow-[0_8px_20px_rgba(91,77,248,0.12)] hover:bg-[var(--surface-card)]"
         >
-          Add task
+          {dictionary.common.addTask}
         </button>
       </div>
 
@@ -94,7 +97,7 @@ export function Column({
           ))
         ) : (
           <div className="flex flex-1 items-center justify-center rounded-[1.25rem] border border-dashed border-[var(--line)] bg-[var(--surface-card)] p-6 text-center text-sm text-[var(--text-muted)]">
-            Drop a task here, or add one to get the board moving.
+            {dictionary.boards.emptyColumnState}
           </div>
         )}
       </div>

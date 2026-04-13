@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 
+import { useLanguage } from "@/components/common/LanguageProvider";
+
 type LoginFormProps = {
   callbackUrl: string;
   registered: boolean;
@@ -10,6 +12,7 @@ type LoginFormProps = {
 };
 
 export function LoginForm({ callbackUrl, registered, withdrawn }: LoginFormProps) {
+  const { dictionary } = useLanguage();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -30,7 +33,7 @@ export function LoginForm({ callbackUrl, registered, withdrawn }: LoginFormProps
     setIsSubmitting(false);
 
     if (!result?.ok || !result.url) {
-      setError("Those credentials did not work. Please try again.");
+      setError(dictionary.auth.credentialsDidNotWork);
       return;
     }
 
@@ -41,13 +44,13 @@ export function LoginForm({ callbackUrl, registered, withdrawn }: LoginFormProps
     <form action={handleSubmit} className="mt-6 space-y-4">
       {registered ? (
         <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          Your account is ready. Sign in to open your boards.
+          {dictionary.auth.yourAccountIsReady}
         </p>
       ) : null}
 
       {withdrawn ? (
         <p className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
-          Your account has been deleted.
+          {dictionary.auth.accountDeleted}
         </p>
       ) : null}
 
@@ -58,7 +61,9 @@ export function LoginForm({ callbackUrl, registered, withdrawn }: LoginFormProps
       ) : null}
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-[var(--text-secondary)]">Email</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
+          {dictionary.common.email}
+        </span>
         <input
           required
           type="email"
@@ -69,13 +74,15 @@ export function LoginForm({ callbackUrl, registered, withdrawn }: LoginFormProps
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-[var(--text-secondary)]">Password</span>
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
+          {dictionary.common.password}
+        </span>
         <input
           required
           type="password"
           name="password"
           className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-          placeholder="At least 8 characters"
+          placeholder={dictionary.auth.passwordMinLength}
         />
       </label>
 
@@ -84,7 +91,7 @@ export function LoginForm({ callbackUrl, registered, withdrawn }: LoginFormProps
         disabled={isSubmitting}
         className="w-full rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.24)] hover:bg-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? "Signing in..." : "Sign in"}
+        {isSubmitting ? dictionary.auth.signInSubmitting : dictionary.common.signIn}
       </button>
     </form>
   );
