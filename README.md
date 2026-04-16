@@ -172,11 +172,10 @@ That split makes it easier to grow the app without mixing route files, domain lo
 /
 ├─ app/
 │  ├─ (auth)/
-│  │  ├─ login/
-│  │  │  └─ page.tsx
-│  │  └─ register/
-│  │     └─ page.tsx
+│  │  ├─ login/page.tsx
+│  │  └─ register/page.tsx
 │  ├─ (dashboard)/
+│  │  ├─ account/page.tsx
 │  │  └─ boards/
 │  │     ├─ page.tsx                  # board list page
 │  │     └─ [boardId]/
@@ -184,57 +183,39 @@ That split makes it easier to grow the app without mixing route files, domain lo
 │  │        ├─ loading.tsx
 │  │        └─ error.tsx
 │  ├─ api/
-│  │  ├─ boards/
-│  │  │  └─ route.ts
-│  │  ├─ columns/
-│  │  │  └─ route.ts
-│  │  ├─ tasks/
-│  │  │  └─ route.ts
-│  │  └─ realtime/
-│  │     └─ route.ts                  # realtime webhook / event endpoint
+│  │  ├─ auth/[...nextauth]/route.ts
+│  │  ├─ boards/route.ts
+│  │  ├─ columns/route.ts
+│  │  ├─ realtime/route.ts            # realtime webhook / event
+│  │  └─ tasks/route.ts
+│  ├─ generated/prisma/
+│  ├─ favicon.ico
+│  ├─ globals.css
 │  ├─ layout.tsx
 │  └─ page.tsx
 ├─ components/
-│  ├─ ui/                             # shared UI primitives
+│  ├─ auth/
 │  ├─ board/
-│  │  ├─ Board.tsx
-│  │  ├─ Column.tsx
-│  │  ├─ TaskCard.tsx
-│  │  └─ AddTaskModal.tsx
 │  └─ common/
-│     ├─ Navbar.tsx
-│     └─ Sidebar.tsx
 ├─ features/
 │  ├─ board/
-│  │  ├─ board.service.ts             # server/domain logic
-│  │  ├─ board.hooks.ts               # client hooks
-│  │  ├─ board.store.ts               # local board state
-│  │  └─ board.types.ts
 │  └─ task/
-│     ├─ task.service.ts
-│     ├─ task.hooks.ts
-│     └─ task.types.ts
-├─ lib/
-│  ├─ prisma.ts
-│  ├─ auth.ts
-│  ├─ pusher.ts                       # or websocket config
-│  ├─ utils.ts
-│  └─ validations.ts
-├─ server/
-│  ├─ actions/
-│  │  ├─ board.actions.ts             # Server Actions
-│  │  └─ task.actions.ts
-│  └─ db/
-│     └─ queries.ts
 ├─ hooks/
-│  ├─ useRealtime.ts
-│  └─ useDebounce.ts
-├─ styles/
-│  └─ globals.css
+├─ lib/
+│  └─ i18n/
+├─ server/
+│  ├─ actions/                        # Server Actions
+│  └─ db/
 ├─ prisma/
+│  ├─ migrations/
 │  └─ schema.prisma
+├─ public/
+├─ styles/
+├─ tests/
+│  ├─ features/
+│  ├─ lib/
+│  └─ mocks/
 ├─ types/
-│  └─ index.ts
 ├─ env.mjs
 └─ proxy.ts                           # Next.js 16 replacement for middleware.ts
 ```
@@ -352,6 +333,20 @@ npm install
 npx prisma migrate dev
 npm run dev
 ```
+
+---
+
+## 🧪 Testing
+
+Run the automated test suite with:
+
+```bash
+npm test
+```
+
+The project uses **Vitest** with tests organized under `tests/`, mirroring the main application areas such as `tests/features/*` and `tests/lib/*`.
+
+When a feature is added or behavior changes, the related test code should be added or updated in the same change so the documented architecture and implementation stay aligned.
 
 ---
 

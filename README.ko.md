@@ -172,11 +172,10 @@ return <Board initialData={board} />;
 /
 ├─ app/
 │  ├─ (auth)/
-│  │  ├─ login/
-│  │  │  └─ page.tsx
-│  │  └─ register/
-│  │     └─ page.tsx
+│  │  ├─ login/page.tsx
+│  │  └─ register/page.tsx
 │  ├─ (dashboard)/
+│  │  ├─ account/page.tsx
 │  │  └─ boards/
 │  │     ├─ page.tsx                  # 보드 목록 페이지
 │  │     └─ [boardId]/
@@ -184,57 +183,39 @@ return <Board initialData={board} />;
 │  │        ├─ loading.tsx
 │  │        └─ error.tsx
 │  ├─ api/
-│  │  ├─ boards/
-│  │  │  └─ route.ts
-│  │  ├─ columns/
-│  │  │  └─ route.ts
-│  │  ├─ tasks/
-│  │  │  └─ route.ts
-│  │  └─ realtime/
-│  │     └─ route.ts                  # 실시간 웹훅 / 이벤트 엔드포인트
+│  │  ├─ auth/[...nextauth]/route.ts
+│  │  ├─ boards/route.ts
+│  │  ├─ columns/route.ts
+│  │  ├─ realtime/route.ts            # 실시간 웹훅 / 이벤트
+│  │  └─ tasks/route.ts
+│  ├─ generated/prisma/
+│  ├─ favicon.ico
+│  ├─ globals.css
 │  ├─ layout.tsx
 │  └─ page.tsx
 ├─ components/
-│  ├─ ui/                             # 공용 UI 프리미티브
+│  ├─ auth/
 │  ├─ board/
-│  │  ├─ Board.tsx
-│  │  ├─ Column.tsx
-│  │  ├─ TaskCard.tsx
-│  │  └─ AddTaskModal.tsx
 │  └─ common/
-│     ├─ Navbar.tsx
-│     └─ Sidebar.tsx
 ├─ features/
 │  ├─ board/
-│  │  ├─ board.service.ts             # 서버/도메인 로직
-│  │  ├─ board.hooks.ts               # 클라이언트 훅
-│  │  ├─ board.store.ts               # 로컬 보드 상태
-│  │  └─ board.types.ts
 │  └─ task/
-│     ├─ task.service.ts
-│     ├─ task.hooks.ts
-│     └─ task.types.ts
-├─ lib/
-│  ├─ prisma.ts
-│  ├─ auth.ts
-│  ├─ pusher.ts                       # 또는 websocket 설정
-│  ├─ utils.ts
-│  └─ validations.ts
-├─ server/
-│  ├─ actions/
-│  │  ├─ board.actions.ts             # Server Actions
-│  │  └─ task.actions.ts
-│  └─ db/
-│     └─ queries.ts
 ├─ hooks/
-│  ├─ useRealtime.ts
-│  └─ useDebounce.ts
-├─ styles/
-│  └─ globals.css
+├─ lib/
+│  └─ i18n/
+├─ server/
+│  ├─ actions/                        # Server Actions
+│  └─ db/
 ├─ prisma/
+│  ├─ migrations/
 │  └─ schema.prisma
+├─ public/
+├─ styles/
+├─ tests/
+│  ├─ features/
+│  ├─ lib/
+│  └─ mocks/
 ├─ types/
-│  └─ index.ts
 ├─ env.mjs
 └─ proxy.ts                           # Next.js 16에서 middleware.ts를 대체
 ```
@@ -352,6 +333,20 @@ npm install
 npx prisma migrate dev
 npm run dev
 ```
+
+---
+
+## 🧪 테스트
+
+자동화된 테스트를 실행하려면 다음 명령을 사용하십시오:
+
+```bash
+npm test
+```
+
+이 프로젝트는 **Vitest**를 사용하며, 테스트는 `tests/` 아래에 정리되어 있습니다. 이는 `tests/features/*` 및 `tests/lib/*`와 같은 주요 애플리케이션 영역을 반영합니다.
+
+기능이 추가되거나 동작이 변경될 경우, 관련 테스트 코드도 동일한 변경 사항에 포함되거나 업데이트되어야 문서화된 아키텍처와 구현이 일관성을 유지할 수 있습니다.
 
 ---
 

@@ -4,6 +4,14 @@ npx prisma migrate dev
 npm run dev
 ```
 
+Run the automated test suite with:
+
+```bash
+npm test
+```
+
+Feature work should include matching test updates under `tests/` before it is considered complete.
+
 Production and Vercel notes:
 
 ```bash

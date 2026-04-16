@@ -3,6 +3,7 @@
 
 ## Build & Test
 docs/BUILD.md - CI config of build/test commands
+docs/TEST.md - rules for test code
 
 ## Architecture
 docs/ARCHITECTURE.md - structure of system and dependency layer
