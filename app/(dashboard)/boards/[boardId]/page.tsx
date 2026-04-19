@@ -3,6 +3,7 @@ import { getBoard } from "@/features/board/board.service";
 import { requireUser } from "@/lib/auth";
 import { formatMessage } from "@/lib/i18n";
 import { getDictionary } from "@/lib/i18n/server";
+import { redirect } from "next/navigation";
 
 type BoardPageProps = {
   params: Promise<{ boardId: string }>;
@@ -11,6 +12,11 @@ type BoardPageProps = {
 export default async function BoardDetailsPage({ params }: BoardPageProps) {
   const user = await requireUser();
   const { boardId } = await params;
+
+  if (boardId === "[boardId]") {
+    redirect("/boards");
+  }
+
   const board = await getBoard(boardId, user.id);
   const { dictionary } = await getDictionary();
 

@@ -4,9 +4,12 @@ import { notFound } from "next/navigation";
 import type { BoardRecord, BoardSummary } from "@/features/board/board.types";
 import type { TaskRecord } from "@/features/task/task.types";
 import {
+  deleteColumn,
   insertBoard,
+  insertColumn,
   queryBoardById,
   queryBoards,
+  updateColumnTitle,
 } from "@/server/db/queries";
 import type { DbBoard, DbColumn, DbTask } from "@/server/db/queries";
 
@@ -153,6 +156,47 @@ function addRuntimeBoard(userId: string, board: BoardRecord) {
   runtimeBoardsByUser.set(userId, [board, ...currentBoards]);
 }
 
+function saveRuntimeBoard(userId: string, board: BoardRecord) {
+  const currentBoards = getRuntimeBoards(userId).filter((item) => item.id !== board.id);
+  runtimeBoardsByUser.set(userId, [board, ...currentBoards]);
+}
+
+function findRuntimeWritableBoard(boardId: string, userId: string): BoardRecord | null {
+  const runtimeBoard = getRuntimeBoards(userId).find((board) => board.id === boardId);
+
+  if (runtimeBoard) {
+    return cloneBoard(runtimeBoard);
+  }
+
+  const fallbackBoard = fallbackBoards.find((board) => board.id === boardId);
+
+  if (fallbackBoard) {
+    return cloneBoard(fallbackBoard);
+  }
+
+  return null;
+}
+
+function findRuntimeBoardByColumn(columnId: string, userId: string): BoardRecord | null {
+  const runtimeBoard = getRuntimeBoards(userId).find((board) =>
+    board.columns.some((column) => column.id === columnId),
+  );
+
+  if (runtimeBoard) {
+    return cloneBoard(runtimeBoard);
+  }
+
+  const fallbackBoard = fallbackBoards.find((board) =>
+    board.columns.some((column) => column.id === columnId),
+  );
+
+  if (fallbackBoard) {
+    return cloneBoard(fallbackBoard);
+  }
+
+  return null;
+}
+
 export async function getBoards(userId: string): Promise<BoardSummary[]> {
   try {
     const boards = await queryBoards(userId);
@@ -207,4 +251,133 @@ export async function createBoard(name: string, userId: string): Promise<BoardRe
 
     return board;
   }
+}
+
+export async function createColumn(
+  boardId: string,
+  name: string,
+  userId: string,
+): Promise<BoardRecord> {
+  try {
+    await insertColumn(userId, boardId, name);
+    const board = await queryBoardById(boardId, userId);
+
+    if (board) {
+      return mapBoard(board);
+    }
+  } catch {
+    const board = findRuntimeWritableBoard(boardId, userId);
+
+    if (board) {
+      const order =
+        board.columns.length > 0
+          ? Math.max(...board.columns.map((column) => column.order)) + 1
+          : 0;
+
+      const updatedBoard = {
+        ...board,
+        columns: [
+          ...board.columns,
+          {
+            id: crypto.randomUUID(),
+            name,
+            order,
+            tasks: [],
+          },
+        ],
+      };
+
+      saveRuntimeBoard(userId, updatedBoard);
+      return updatedBoard;
+    }
+  }
+
+  throw new Error("Board not found.");
+}
+
+export async function renameColumn(
+  columnId: string,
+  name: string,
+  userId: string,
+): Promise<BoardRecord> {
+  let boardId = "";
+
+  try {
+    const column = await updateColumnTitle(userId, columnId, name);
+    boardId = column.boardId;
+  } catch {
+    const board = findRuntimeBoardByColumn(columnId, userId);
+
+    if (board) {
+      const updatedBoard = {
+        ...board,
+        columns: board.columns.map((column) =>
+          column.id === columnId
+            ? {
+                ...column,
+                name,
+              }
+            : column,
+        ),
+      };
+
+      saveRuntimeBoard(userId, updatedBoard);
+      return updatedBoard;
+    }
+
+    throw new Error("Column not found.");
+  }
+
+  const board = await queryBoardById(boardId, userId);
+
+  if (board) {
+    return mapBoard(board);
+  }
+
+  notFound();
+}
+
+export async function removeColumn(columnId: string, userId: string): Promise<BoardRecord> {
+  let boardId = "";
+
+  try {
+    const column = await deleteColumn(userId, columnId);
+    boardId = column.boardId;
+  } catch (error) {
+    const board = findRuntimeBoardByColumn(columnId, userId);
+
+    if (board) {
+      const targetColumn = board.columns.find((column) => column.id === columnId);
+
+      if (!targetColumn) {
+        throw new Error("Column not found.");
+      }
+
+      if (board.columns.length <= 1) {
+        throw new Error("Boards need at least one column.");
+      }
+
+      if (targetColumn.tasks.length > 0) {
+        throw new Error("Move tasks out of this column before deleting it.");
+      }
+
+      const updatedBoard = {
+        ...board,
+        columns: board.columns.filter((column) => column.id !== columnId),
+      };
+
+      saveRuntimeBoard(userId, updatedBoard);
+      return updatedBoard;
+    }
+
+    throw error;
+  }
+
+  const board = await queryBoardById(boardId, userId);
+
+  if (board) {
+    return mapBoard(board);
+  }
+
+  notFound();
 }

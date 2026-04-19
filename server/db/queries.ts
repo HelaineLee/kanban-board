@@ -10,6 +10,7 @@ export type DbTask = {
 export type DbColumn = {
   id: string;
   title: string;
+  boardId: string;
   order: number;
   tasks: DbTask[];
 };
@@ -35,6 +36,13 @@ type DbColumnOwner = {
   id: string;
   boardId: string;
   board: DbBoardOwner;
+};
+
+type DbColumnWithBoardAndTasks = DbColumnOwner & {
+  tasks: DbTask[];
+  board: DbBoardOwner & {
+    columns: Array<{ id: string }>;
+  };
 };
 
 type DbTaskOwner = {
@@ -94,10 +102,31 @@ type LoosePrismaClient = {
   column: {
     findUnique: (args: {
       where: { id: string };
-      include: {
-        board: true;
-      };
-    }) => Promise<DbColumnOwner | null>;
+      include:
+        | {
+            board: true;
+          }
+        | {
+            board: {
+              include: {
+                columns: true;
+              };
+            };
+            tasks: true;
+          };
+    }) => Promise<DbColumnOwner | DbColumnWithBoardAndTasks | null>;
+    create: (args: {
+      data: { title: string; boardId: string; order: number };
+      include: { tasks: true };
+    }) => Promise<DbColumn>;
+    update: (args: {
+      where: { id: string };
+      data: { title: string };
+      include: { tasks: true };
+    }) => Promise<DbColumn>;
+    delete: (args: {
+      where: { id: string };
+    }) => Promise<DbColumn>;
   };
   user: {
     findUnique: (args: { where: { email: string } }) => Promise<DbUser | null>;
@@ -190,6 +219,94 @@ export async function insertBoard(name: string, userId: string): Promise<DbBoard
       },
     },
     include: boardInclude,
+  });
+}
+
+export async function insertColumn(
+  userId: string,
+  boardId: string,
+  title: string,
+): Promise<DbColumn> {
+  const board = await db.board.findFirst({
+    where: { id: boardId, userId },
+    include: boardInclude,
+  });
+
+  if (!board) {
+    throw new Error("Board not found.");
+  }
+
+  const order =
+    board.columns.length > 0
+      ? Math.max(...board.columns.map((column) => column.order)) + 1
+      : 0;
+
+  return db.column.create({
+    data: {
+      title,
+      boardId,
+      order,
+    },
+    include: {
+      tasks: true,
+    },
+  });
+}
+
+export async function updateColumnTitle(
+  userId: string,
+  columnId: string,
+  title: string,
+): Promise<DbColumn> {
+  const column = await db.column.findUnique({
+    where: { id: columnId },
+    include: {
+      board: true,
+    },
+  });
+
+  if (!column || column.board.userId !== userId) {
+    throw new Error("Column not found.");
+  }
+
+  return db.column.update({
+    where: { id: columnId },
+    data: {
+      title,
+    },
+    include: {
+      tasks: true,
+    },
+  });
+}
+
+export async function deleteColumn(userId: string, columnId: string): Promise<DbColumn> {
+  const column = (await db.column.findUnique({
+    where: { id: columnId },
+    include: {
+      board: {
+        include: {
+          columns: true,
+        },
+      },
+      tasks: true,
+    },
+  })) as DbColumnWithBoardAndTasks | null;
+
+  if (!column || column.board.userId !== userId) {
+    throw new Error("Column not found.");
+  }
+
+  if (column.board.columns.length <= 1) {
+    throw new Error("Boards need at least one column.");
+  }
+
+  if (column.tasks.length > 0) {
+    throw new Error("Move tasks out of this column before deleting it.");
+  }
+
+  return db.column.delete({
+    where: { id: columnId },
   });
 }
 

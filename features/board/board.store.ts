@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { BoardRecord } from "@/features/board/board.types";
+import type { BoardRecord, ColumnRecord } from "@/features/board/board.types";
 import type { TaskRecord } from "@/features/task/task.types";
 
 type BoardStoreState = {
@@ -8,6 +8,9 @@ type BoardStoreState = {
   initializeBoard: (board: BoardRecord) => void;
   replaceBoard: (board: BoardRecord) => void;
   setActiveBoard: (board: BoardRecord | null) => void;
+  addColumn: (column: ColumnRecord) => void;
+  updateColumn: (columnId: string, name: string) => void;
+  removeColumn: (columnId: string) => void;
   addTask: (columnId: string, task: TaskRecord) => void;
   moveTask: (taskId: string, targetColumnId: string) => void;
 };
@@ -55,6 +58,55 @@ export const useBoardStore = create<BoardStoreState>((set) => ({
   setActiveBoard: (board) => {
     set({
       activeBoard: board ? sortBoard(board) : null,
+    });
+  },
+  addColumn: (column) => {
+    set((state) => {
+      if (!state.activeBoard) {
+        return state;
+      }
+
+      return {
+        activeBoard: sortBoard({
+          ...state.activeBoard,
+          columns: [...state.activeBoard.columns, column],
+        }),
+      };
+    });
+  },
+  updateColumn: (columnId, name) => {
+    set((state) => {
+      if (!state.activeBoard) {
+        return state;
+      }
+
+      return {
+        activeBoard: {
+          ...state.activeBoard,
+          columns: state.activeBoard.columns.map((column) =>
+            column.id === columnId
+              ? {
+                  ...column,
+                  name,
+                }
+              : column,
+          ),
+        },
+      };
+    });
+  },
+  removeColumn: (columnId) => {
+    set((state) => {
+      if (!state.activeBoard) {
+        return state;
+      }
+
+      return {
+        activeBoard: {
+          ...state.activeBoard,
+          columns: state.activeBoard.columns.filter((column) => column.id !== columnId),
+        },
+      };
     });
   },
   addTask: (columnId, task) => {

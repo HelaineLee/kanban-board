@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const insertBoard = vi.fn();
+const insertColumn = vi.fn();
 const queryBoardById = vi.fn();
 const queryBoards = vi.fn();
+const updateColumnTitle = vi.fn();
+const deleteColumn = vi.fn();
 const notFound = vi.fn();
 
 vi.mock("next/navigation", () => ({
@@ -10,16 +13,22 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/server/db/queries", () => ({
+  deleteColumn,
   insertBoard,
+  insertColumn,
   queryBoardById,
   queryBoards,
+  updateColumnTitle,
 }));
 
 describe("board.service", () => {
   beforeEach(() => {
     insertBoard.mockReset();
+    insertColumn.mockReset();
     queryBoardById.mockReset();
     queryBoards.mockReset();
+    updateColumnTitle.mockReset();
+    deleteColumn.mockReset();
     notFound.mockReset();
     vi.resetModules();
   });
@@ -109,6 +118,72 @@ describe("board.service", () => {
     const secondBoard = await getBoard("demo-board", "user-7");
 
     expect(secondBoard.columns[0].tasks[0].title).toBe("Write launch copy");
+  });
+
+  it("creates a column and returns the refreshed board", async () => {
+    insertColumn.mockResolvedValue({
+      id: "col-review",
+      title: "Review",
+      boardId: "board-1",
+      order: 1,
+      tasks: [],
+    });
+    queryBoardById.mockResolvedValue({
+      id: "board-1",
+      title: "Alpha",
+      columns: [
+        { id: "col-backlog", title: "Backlog", boardId: "board-1", order: 0, tasks: [] },
+        { id: "col-review", title: "Review", boardId: "board-1", order: 1, tasks: [] },
+      ],
+    });
+
+    const { createColumn } = await import("@/features/board/board.service");
+
+    await expect(createColumn("board-1", "Review", "user-1")).resolves.toEqual({
+      id: "board-1",
+      name: "Alpha",
+      columns: [
+        { id: "col-backlog", name: "Backlog", order: 0, tasks: [] },
+        { id: "col-review", name: "Review", order: 1, tasks: [] },
+      ],
+    });
+
+    expect(insertColumn).toHaveBeenCalledWith("user-1", "board-1", "Review");
+  });
+
+  it("renames a column and returns the refreshed board", async () => {
+    updateColumnTitle.mockResolvedValue({
+      id: "col-1",
+      title: "To Triage",
+      boardId: "board-1",
+      order: 0,
+      tasks: [],
+    });
+    queryBoardById.mockResolvedValue({
+      id: "board-1",
+      title: "Alpha",
+      columns: [
+        { id: "col-1", title: "To Triage", boardId: "board-1", order: 0, tasks: [] },
+      ],
+    });
+
+    const { renameColumn } = await import("@/features/board/board.service");
+
+    await expect(renameColumn("col-1", "To Triage", "user-1")).resolves.toEqual({
+      id: "board-1",
+      name: "Alpha",
+      columns: [{ id: "col-1", name: "To Triage", order: 0, tasks: [] }],
+    });
+  });
+
+  it("propagates delete guard errors from persistence", async () => {
+    deleteColumn.mockRejectedValue(new Error("Move tasks out of this column before deleting it."));
+
+    const { removeColumn } = await import("@/features/board/board.service");
+
+    await expect(removeColumn("col-1", "user-1")).rejects.toThrow(
+      "Move tasks out of this column before deleting it.",
+    );
   });
 
   it("calls notFound when the board does not exist", async () => {
