@@ -13,18 +13,33 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(cuid())
-  email        String  @unique
-  passwordHash String
-  boards       Board[]
+  id               String        @id @default(cuid())
+  email            String        @unique
+  passwordHash     String
+  boards           Board[]
+  boardMemberships BoardMember[]
 }
 
 model Board {
-  id      String   @id @default(cuid())
+  id      String        @id @default(cuid())
   title   String
   userId  String
   columns Column[]
-  user    User     @relation(fields: [userId], references: [id])
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  members BoardMember[]
+}
+
+model BoardMember {
+  id        String   @id @default(cuid())
+  boardId   String
+  userId    String
+  role      TeamRole @default(MEMBER)
+  createdAt DateTime @default(now())
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, userId])
+  @@index([userId])
 }
 
 model Column {
@@ -33,7 +48,7 @@ model Column {
   boardId String
   tasks   Task[]
   order   Int
-  board   Board  @relation(fields: [boardId], references: [id])
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
 }
 
 model Task {
@@ -41,5 +56,12 @@ model Task {
   title    String
   columnId String
   order    Int
-  column   Column @relation(fields: [columnId], references: [id])
+  column   Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
+}
+
+enum TeamRole {
+  LEADER
+  MANAGER
+  MEMBER
+  VIEWER
 }

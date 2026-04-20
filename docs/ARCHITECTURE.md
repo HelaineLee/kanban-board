@@ -69,11 +69,12 @@ This project is a Next.js 16 App Router application for a kanban board with auth
 - Contains presentational and interaction-focused UI.
 - `components/auth` holds auth forms and account actions.
 - `components/board` holds kanban board UI such as board, column, task card, and create/add dialogs.
+- `components/team` holds board team membership and role management UI.
 - `components/common` holds shared app chrome and providers such as navigation, theme, and language helpers.
 
 ### `features/`
 - Groups feature-specific client and domain logic by business area.
-- `board` and `task` each keep their own hooks, service logic, local store, and feature types close together.
+- `board`, `team` and `task` each keep their own hooks, service logic, local store, and feature types close together.
 - This is the main place to add new feature modules when behavior grows beyond simple UI-only changes.
 
 ### `hooks/`

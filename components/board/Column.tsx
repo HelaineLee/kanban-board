@@ -12,6 +12,7 @@ type ColumnProps = {
   canMoveLeft: boolean;
   canMoveRight: boolean;
   canDelete: boolean;
+  canEdit: boolean;
   onAddTask: () => void;
   onRenameColumn: (name: string) => Promise<boolean>;
   onDeleteColumn: () => void;
@@ -25,6 +26,7 @@ export function Column({
   canMoveLeft,
   canMoveRight,
   canDelete,
+  canEdit,
   onAddTask,
   onRenameColumn,
   onDeleteColumn,
@@ -39,6 +41,10 @@ export function Column({
   const [isSavingName, setIsSavingName] = useState(false);
 
   function handleDragOver(event: DragEvent<HTMLElement>) {
+    if (!canEdit) {
+      return;
+    }
+
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
     setIsDropTarget(true);
@@ -53,6 +59,10 @@ export function Column({
   function handleDrop(event: DragEvent<HTMLElement>) {
     event.preventDefault();
     setIsDropTarget(false);
+
+    if (!canEdit) {
+      return;
+    }
 
     const taskId = event.dataTransfer.getData("text/task-id");
     const sourceColumnId = event.dataTransfer.getData("text/task-column-id");
@@ -147,7 +157,8 @@ export function Column({
           <button
             type="button"
             onClick={onAddTask}
-            className="rounded-full bg-[var(--surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--brand-strong)] shadow-[0_8px_20px_rgba(91,77,248,0.12)] hover:bg-[var(--surface-card)]"
+            disabled={!canEdit}
+            className="rounded-full bg-[var(--surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--brand-strong)] shadow-[0_8px_20px_rgba(91,77,248,0.12)] hover:bg-[var(--surface-card)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {dictionary.common.addTask}
           </button>
@@ -157,13 +168,14 @@ export function Column({
               setColumnName(column.name);
               setIsEditingName(true);
             }}
-            className="rounded-full border border-[var(--line)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
+            disabled={!canEdit}
+            className="rounded-full border border-[var(--line)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {dictionary.boards.renameColumn}
           </button>
           <button
             type="button"
-            disabled={!canDelete || column.tasks.length > 0}
+            disabled={!canEdit || !canDelete || column.tasks.length > 0}
             onClick={onDeleteColumn}
             className="rounded-full border border-rose-200 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-45"
             title={
@@ -184,8 +196,9 @@ export function Column({
               key={task.id}
               task={task}
               columnId={column.id}
-              canMoveLeft={canMoveLeft}
-              canMoveRight={canMoveRight}
+              canMoveLeft={canEdit && canMoveLeft}
+              canMoveRight={canEdit && canMoveRight}
+              canEdit={canEdit}
               onMoveLeft={() => onMoveTaskLeft(task.id)}
               onMoveRight={() => onMoveTaskRight(task.id)}
             />

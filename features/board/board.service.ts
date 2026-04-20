@@ -1,7 +1,7 @@
 import "server-only";
 import { notFound } from "next/navigation";
 
-import type { BoardRecord, BoardSummary } from "@/features/board/board.types";
+import type { BoardRecord, BoardSummary, TeamRole } from "@/features/board/board.types";
 import type { TaskRecord } from "@/features/task/task.types";
 import {
   deleteColumn,
@@ -19,6 +19,9 @@ const fallbackBoards: BoardRecord[] = [
   {
     id: "demo-board",
     name: "Product Launch",
+    role: "LEADER",
+    canEdit: true,
+    canManageTeam: true,
     columns: [
       {
         id: "todo",
@@ -74,6 +77,9 @@ const fallbackBoards: BoardRecord[] = [
   {
     id: "engineering",
     name: "Engineering Sprint",
+    role: "LEADER",
+    canEdit: true,
+    canManageTeam: true,
     columns: [
       {
         id: "eng-backlog",
@@ -115,10 +121,27 @@ function mapTask(task: DbTask): TaskRecord {
   };
 }
 
-function mapBoard(board: DbBoard): BoardRecord {
+function getRoleForUser(board: DbBoard, userId: string): TeamRole {
+  if (board.userId === userId) {
+    return "LEADER";
+  }
+
+  return board.members?.find((member) => member.userId === userId)?.role ?? "VIEWER";
+}
+
+function canEdit(role: TeamRole) {
+  return role !== "VIEWER";
+}
+
+function mapBoard(board: DbBoard, userId: string): BoardRecord {
+  const role = getRoleForUser(board, userId);
+
   return {
     id: board.id,
     name: board.title,
+    role,
+    canEdit: canEdit(role),
+    canManageTeam: role === "LEADER",
     columns: board.columns.map((column: DbColumn) => ({
       id: column.id,
       name: column.title,
@@ -144,6 +167,17 @@ function toBoardSummary(board: BoardRecord): BoardSummary {
     name: board.name,
     columnCount: board.columns.length,
     taskCount: board.columns.reduce((count, column) => count + column.tasks.length, 0),
+    role: board.role,
+    memberCount: 1,
+  };
+}
+
+function toPersistedBoardSummary(board: DbBoard, userId: string): BoardSummary {
+  const mappedBoard = mapBoard(board, userId);
+
+  return {
+    ...toBoardSummary(mappedBoard),
+    memberCount: board._count?.members ?? board.members?.length ?? 1,
   };
 }
 
@@ -200,7 +234,7 @@ function findRuntimeBoardByColumn(columnId: string, userId: string): BoardRecord
 export async function getBoards(userId: string): Promise<BoardSummary[]> {
   try {
     const boards = await queryBoards(userId);
-    return boards.map((board) => toBoardSummary(mapBoard(board)));
+    return boards.map((board) => toPersistedBoardSummary(board, userId));
   } catch {
     return [...getRuntimeBoards(userId), ...fallbackBoards].map(toBoardSummary);
   }
@@ -211,7 +245,7 @@ export async function getBoard(boardId: string, userId: string): Promise<BoardRe
     const board = await queryBoardById(boardId, userId);
 
     if (board) {
-      return mapBoard(board);
+      return mapBoard(board, userId);
     }
   } catch {
     // Fall back to local demo data when the database is unavailable.
@@ -235,11 +269,14 @@ export async function getBoard(boardId: string, userId: string): Promise<BoardRe
 export async function createBoard(name: string, userId: string): Promise<BoardRecord> {
   try {
     const board = await insertBoard(name, userId);
-    return mapBoard(board);
+    return mapBoard(board, userId);
   } catch {
     const board = {
       id: crypto.randomUUID(),
       name,
+      role: "LEADER" as const,
+      canEdit: true,
+      canManageTeam: true,
       columns: [
         { id: crypto.randomUUID(), name: "Backlog", order: 0, tasks: [] },
         { id: crypto.randomUUID(), name: "In Progress", order: 1, tasks: [] },
@@ -263,7 +300,7 @@ export async function createColumn(
     const board = await queryBoardById(boardId, userId);
 
     if (board) {
-      return mapBoard(board);
+      return mapBoard(board, userId);
     }
   } catch {
     const board = findRuntimeWritableBoard(boardId, userId);
@@ -331,7 +368,7 @@ export async function renameColumn(
   const board = await queryBoardById(boardId, userId);
 
   if (board) {
-    return mapBoard(board);
+    return mapBoard(board, userId);
   }
 
   notFound();
@@ -376,7 +413,7 @@ export async function removeColumn(columnId: string, userId: string): Promise<Bo
   const board = await queryBoardById(boardId, userId);
 
   if (board) {
-    return mapBoard(board);
+    return mapBoard(board, userId);
   }
 
   notFound();

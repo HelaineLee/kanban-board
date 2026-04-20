@@ -42,6 +42,16 @@ export default async function BoardsPage() {
                   tasks: board.taskCount,
                 })}
               </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-medium text-[var(--brand-strong)]">
+                  {dictionary.team.roleLabels[board.role]}
+                </span>
+                <span className="rounded-full border border-[var(--line)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)]">
+                  {formatMessage(dictionary.team.memberSummary, {
+                    count: board.memberCount,
+                  })}
+                </span>
+              </div>
             </Link>
           ))}
         </div>

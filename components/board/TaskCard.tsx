@@ -8,6 +8,7 @@ type TaskCardProps = {
   columnId: string;
   canMoveLeft: boolean;
   canMoveRight: boolean;
+  canEdit: boolean;
   onMoveLeft: () => void;
   onMoveRight: () => void;
 };
@@ -17,6 +18,7 @@ export function TaskCard({
   columnId,
   canMoveLeft,
   canMoveRight,
+  canEdit,
   onMoveLeft,
   onMoveRight,
 }: TaskCardProps) {
@@ -24,13 +26,19 @@ export function TaskCard({
 
   return (
     <article
-      draggable
+      draggable={canEdit}
       onDragStart={(event) => {
+        if (!canEdit) {
+          return;
+        }
+
         event.dataTransfer.effectAllowed = "move";
         event.dataTransfer.setData("text/task-id", task.id);
         event.dataTransfer.setData("text/task-column-id", columnId);
       }}
-      className="cursor-grab rounded-[1.4rem] border border-[var(--line)] bg-[linear-gradient(180deg,var(--surface-card-strong),var(--surface-card))] p-4 shadow-[0_18px_32px_rgba(15,23,42,0.16)] active:cursor-grabbing"
+      className={`rounded-[1.4rem] border border-[var(--line)] bg-[linear-gradient(180deg,var(--surface-card-strong),var(--surface-card))] p-4 shadow-[0_18px_32px_rgba(15,23,42,0.16)] ${
+        canEdit ? "cursor-grab active:cursor-grabbing" : ""
+      }`}
     >
       <div className="flex items-start justify-between gap-3">
         <h4 className="font-medium text-[var(--text-primary)]">{task.title}</h4>

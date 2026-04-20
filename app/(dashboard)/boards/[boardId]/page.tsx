@@ -1,4 +1,5 @@
 import { Board } from "@/components/board/Board";
+import { TeamManagement } from "@/components/team/TeamManagement";
 import { getBoard } from "@/features/board/board.service";
 import { requireUser } from "@/lib/auth";
 import { formatMessage } from "@/lib/i18n";
@@ -33,6 +34,11 @@ export default async function BoardDetailsPage({ params }: BoardPageProps) {
       </header>
 
       <Board board={board} />
+      <TeamManagement
+        boardId={board.id}
+        userId={user.id}
+        canManageTeam={board.canManageTeam}
+      />
     </main>
   );
 }

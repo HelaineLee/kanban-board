@@ -17,6 +17,7 @@ type BoardProps = {
 export function Board({ board }: BoardProps) {
   const { dictionary } = useLanguage();
   const activeBoard = useBoard(board.id, board);
+  const canEdit = activeBoard.canEdit;
   const addTask = useBoardStore((state) => state.addTask);
   const moveTask = useBoardStore((state) => state.moveTask);
   const replaceBoard = useBoardStore((state) => state.replaceBoard);
@@ -51,6 +52,11 @@ export function Board({ board }: BoardProps) {
 
   async function handleCreateColumn() {
     const name = newColumnName.trim();
+
+    if (!canEdit) {
+      setStatusMessage(dictionary.team.readOnlyNotice);
+      return;
+    }
 
     if (!name) {
       setStatusMessage(dictionary.errors.columnNameRequired);
@@ -87,6 +93,11 @@ export function Board({ board }: BoardProps) {
   }
 
   async function handleRenameColumn(columnId: string, name: string): Promise<boolean> {
+    if (!canEdit) {
+      setStatusMessage(dictionary.team.readOnlyNotice);
+      return false;
+    }
+
     const response = await fetch("/api/columns", {
       method: "PATCH",
       headers: {
@@ -114,6 +125,11 @@ export function Board({ board }: BoardProps) {
   }
 
   async function handleDeleteColumn(columnId: string) {
+    if (!canEdit) {
+      setStatusMessage(dictionary.team.readOnlyNotice);
+      return;
+    }
+
     const column = activeBoard.columns.find((item) => item.id === columnId);
 
     if (!column) {
@@ -151,6 +167,11 @@ export function Board({ board }: BoardProps) {
     description: string;
     columnId: string;
   }) {
+    if (!canEdit) {
+      setStatusMessage(dictionary.team.readOnlyNotice);
+      return;
+    }
+
     const response = await fetch("/api/tasks", {
       method: "POST",
       headers: {
@@ -190,6 +211,11 @@ export function Board({ board }: BoardProps) {
   ) {
     const currentIndex = columnLookup.get(currentColumnId);
 
+    if (!canEdit) {
+      setStatusMessage(dictionary.team.readOnlyNotice);
+      return;
+    }
+
     if (currentIndex === undefined) {
       return;
     }
@@ -222,6 +248,11 @@ export function Board({ board }: BoardProps) {
 
   async function handleDropTask(taskId: string, sourceColumnId: string, targetColumnId: string) {
     if (sourceColumnId === targetColumnId) {
+      return;
+    }
+
+    if (!canEdit) {
+      setStatusMessage(dictionary.team.readOnlyNotice);
       return;
     }
 
@@ -274,11 +305,12 @@ export function Board({ board }: BoardProps) {
           </div>
           <button
             type="button"
+            disabled={!canEdit}
             onClick={() => {
               setSelectedColumnId(activeBoard.columns[0]?.id);
               setIsModalOpen(true);
             }}
-            className="rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.28)] hover:-translate-y-0.5 hover:bg-[var(--brand-strong)]"
+            className="rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_32px_rgba(91,77,248,0.28)] hover:-translate-y-0.5 hover:bg-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {dictionary.common.addTask}
           </button>
@@ -331,8 +363,9 @@ export function Board({ board }: BoardProps) {
           ) : (
             <button
               type="button"
+              disabled={!canEdit}
               onClick={() => setIsAddingColumn(true)}
-              className="rounded-full border border-[var(--line)] bg-[var(--surface-card-strong)] px-5 py-3 text-sm font-medium text-[var(--brand-strong)] hover:border-[var(--brand)]"
+              className="rounded-full border border-[var(--line)] bg-[var(--surface-card-strong)] px-5 py-3 text-sm font-medium text-[var(--brand-strong)] hover:border-[var(--brand)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {dictionary.boards.addColumn}
             </button>
@@ -353,6 +386,7 @@ export function Board({ board }: BoardProps) {
               canMoveLeft={index > 0}
               canMoveRight={index < activeBoard.columns.length - 1}
               canDelete={activeBoard.columns.length > 1}
+              canEdit={canEdit}
               onAddTask={() => {
                 setSelectedColumnId(column.id);
                 setIsModalOpen(true);

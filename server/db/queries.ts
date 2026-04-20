@@ -18,7 +18,24 @@ export type DbColumn = {
 export type DbBoard = {
   id: string;
   title: string;
+  userId: string;
   columns: DbColumn[];
+  members?: DbBoardMember[];
+  _count?: {
+    members: number;
+  };
+};
+
+export type TeamRole = "LEADER" | "MANAGER" | "MEMBER" | "VIEWER";
+
+export type DbBoardMember = {
+  id: string;
+  boardId: string;
+  userId: string;
+  role: TeamRole;
+  user: {
+    email: string;
+  };
 };
 
 type DbUser = {
@@ -30,6 +47,7 @@ type DbUser = {
 type DbBoardOwner = {
   id: string;
   userId: string;
+  members?: Array<{ userId: string; role: TeamRole }>;
 };
 
 type DbColumnOwner = {
@@ -55,12 +73,12 @@ type LoosePrismaClient = {
   $queryRaw: (query: TemplateStringsArray, ...values: unknown[]) => Promise<unknown>;
   board: {
     findMany: (args: {
-      where: { userId: string };
+      where: unknown;
       orderBy: { title: "asc" };
       include: typeof boardInclude;
     }) => Promise<DbBoard[]>;
     findFirst: (args: {
-      where: { id: string; userId: string };
+      where: unknown;
       include: typeof boardInclude;
     }) => Promise<DbBoard | null>;
     create: (args: {
@@ -70,6 +88,9 @@ type LoosePrismaClient = {
         columns: {
           create: Array<{ title: string; order: number }>;
         };
+        members: {
+          create: { userId: string; role: TeamRole };
+        };
       };
       include: typeof boardInclude;
     }) => Promise<DbBoard>;
@@ -77,19 +98,13 @@ type LoosePrismaClient = {
   task: {
     findMany: (args: {
       where:
-        | { column: { boardId: string; board: { userId: string } } }
+        | { column: { boardId: string; board: unknown } }
         | { columnId: string };
       orderBy: { order: "asc" };
     }) => Promise<DbTask[]>;
     findUnique: (args: {
       where: { id: string };
-      include: {
-        column: {
-          include: {
-            board: true;
-          };
-        };
-      };
+      include: unknown;
     }) => Promise<DbTaskOwner | null>;
     create: (args: {
       data: { title: string; columnId: string; order: number };
@@ -102,18 +117,7 @@ type LoosePrismaClient = {
   column: {
     findUnique: (args: {
       where: { id: string };
-      include:
-        | {
-            board: true;
-          }
-        | {
-            board: {
-              include: {
-                columns: true;
-              };
-            };
-            tasks: true;
-          };
+      include: unknown;
     }) => Promise<DbColumnOwner | DbColumnWithBoardAndTasks | null>;
     create: (args: {
       data: { title: string; boardId: string; order: number };
@@ -129,9 +133,31 @@ type LoosePrismaClient = {
     }) => Promise<DbColumn>;
   };
   user: {
-    findUnique: (args: { where: { email: string } }) => Promise<DbUser | null>;
+    findUnique: (args: { where: { id?: string; email?: string } }) => Promise<DbUser | null>;
     findFirst: (args: { orderBy: { email: "asc" } }) => Promise<DbUser | null>;
     create: (args: { data: { email: string; passwordHash: string } }) => Promise<DbUser>;
+  };
+  boardMember: {
+    findMany: (args: {
+      where: { boardId: string };
+      orderBy: Array<{ role?: "asc" } | { user: { email: "asc" } }>;
+      include: { user: { select: { email: true } } };
+    }) => Promise<DbBoardMember[]>;
+    findUnique: (args: {
+      where: { boardId_userId: { boardId: string; userId: string } };
+    }) => Promise<(DbBoardMember & { user?: { email: string } }) | null>;
+    upsert: (args: {
+      where: { boardId_userId: { boardId: string; userId: string } };
+      update: { role: TeamRole };
+      create: { boardId: string; userId: string; role: TeamRole };
+      include: { user: { select: { email: true } } };
+    }) => Promise<DbBoardMember>;
+    update: (args: {
+      where: { boardId_userId: { boardId: string; userId: string } };
+      data: { role: TeamRole };
+      include: { user: { select: { email: true } } };
+    }) => Promise<DbBoardMember>;
+    count: (args: { where: { boardId: string; role: TeamRole } }) => Promise<number>;
   };
 };
 
@@ -146,6 +172,20 @@ const boardInclude = {
           order: "asc" as const,
         },
       },
+    },
+  },
+  members: {
+    include: {
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
+  },
+  _count: {
+    select: {
+      members: true,
     },
   },
 };
@@ -173,7 +213,16 @@ export async function healthcheckQuery() {
 export async function queryBoards(userId: string): Promise<DbBoard[]> {
   return db.board.findMany({
     where: {
-      userId,
+      OR: [
+        { userId },
+        {
+          members: {
+            some: {
+              userId,
+            },
+          },
+        },
+      ],
     },
     orderBy: {
       title: "asc",
@@ -184,7 +233,19 @@ export async function queryBoards(userId: string): Promise<DbBoard[]> {
 
 export async function queryBoardById(boardId: string, userId: string): Promise<DbBoard | null> {
   return db.board.findFirst({
-    where: { id: boardId, userId },
+    where: {
+      id: boardId,
+      OR: [
+        { userId },
+        {
+          members: {
+            some: {
+              userId,
+            },
+          },
+        },
+      ],
+    },
     include: boardInclude,
   });
 }
@@ -195,7 +256,16 @@ export async function queryTasksForBoard(boardId: string, userId: string): Promi
       column: {
         boardId,
         board: {
-          userId,
+          OR: [
+            { userId },
+            {
+              members: {
+                some: {
+                  userId,
+                },
+              },
+            },
+          ],
         },
       },
     },
@@ -217,6 +287,12 @@ export async function insertBoard(name: string, userId: string): Promise<DbBoard
           { title: "Done", order: 2 },
         ],
       },
+      members: {
+        create: {
+          userId,
+          role: "LEADER",
+        },
+      },
     },
     include: boardInclude,
   });
@@ -228,7 +304,22 @@ export async function insertColumn(
   title: string,
 ): Promise<DbColumn> {
   const board = await db.board.findFirst({
-    where: { id: boardId, userId },
+    where: {
+      id: boardId,
+      OR: [
+        { userId },
+        {
+          members: {
+            some: {
+              userId,
+              role: {
+                in: ["LEADER", "MANAGER", "MEMBER"],
+              },
+            },
+          },
+        },
+      ],
+    },
     include: boardInclude,
   });
 
@@ -261,11 +352,15 @@ export async function updateColumnTitle(
   const column = await db.column.findUnique({
     where: { id: columnId },
     include: {
-      board: true,
+      board: {
+        include: {
+          members: true,
+        },
+      },
     },
   });
 
-  if (!column || column.board.userId !== userId) {
+  if (!column || !canWriteBoard(column.board, userId)) {
     throw new Error("Column not found.");
   }
 
@@ -287,13 +382,14 @@ export async function deleteColumn(userId: string, columnId: string): Promise<Db
       board: {
         include: {
           columns: true,
+          members: true,
         },
       },
       tasks: true,
     },
   })) as DbColumnWithBoardAndTasks | null;
 
-  if (!column || column.board.userId !== userId) {
+  if (!column || !canWriteBoard(column.board, userId)) {
     throw new Error("Column not found.");
   }
 
@@ -314,11 +410,15 @@ export async function insertTask(userId: string, columnId: string, title: string
   const column = await db.column.findUnique({
     where: { id: columnId },
     include: {
-      board: true,
+      board: {
+        include: {
+          members: true,
+        },
+      },
     },
   });
 
-  if (!column || column.board.userId !== userId) {
+  if (!column || !canWriteBoard(column.board, userId)) {
     throw new Error("Column not found.");
   }
 
@@ -344,7 +444,11 @@ export async function updateTaskColumn(
       include: {
         column: {
           include: {
-            board: true,
+            board: {
+              include: {
+                members: true,
+              },
+            },
           },
         },
       },
@@ -352,16 +456,20 @@ export async function updateTaskColumn(
     db.column.findUnique({
       where: { id: newColumnId },
       include: {
-        board: true,
+        board: {
+          include: {
+            members: true,
+          },
+        },
       },
     }),
   ]);
 
-  if (!task || task.column.board.userId !== userId) {
+  if (!task || !canWriteBoard(task.column.board, userId)) {
     throw new Error("Task not found.");
   }
 
-  if (!targetColumn || targetColumn.board.userId !== userId) {
+  if (!targetColumn || !canWriteBoard(targetColumn.board, userId)) {
     throw new Error("Destination column not found.");
   }
 
@@ -374,4 +482,159 @@ export async function updateTaskColumn(
       order: nextOrder,
     },
   });
+}
+
+function canWriteBoard(board: DbBoardOwner, userId: string): boolean {
+  if (board.userId === userId) {
+    return true;
+  }
+
+  return Boolean(
+    board.members?.some(
+      (member) =>
+        member.userId === userId &&
+        ["LEADER", "MANAGER", "MEMBER"].includes(member.role),
+    ),
+  );
+}
+
+export async function queryBoardMembers(
+  boardId: string,
+  userId: string,
+): Promise<DbBoardMember[]> {
+  const board = await queryBoardById(boardId, userId);
+
+  if (!board) {
+    throw new Error("Board not found.");
+  }
+
+  return db.boardMember.findMany({
+    where: { boardId },
+    orderBy: [{ role: "asc" }, { user: { email: "asc" } }],
+    include: {
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
+  });
+}
+
+export async function queryBoardMembership(
+  boardId: string,
+  userId: string,
+): Promise<(Omit<DbBoardMember, "user"> & { user?: { email: string } }) | null> {
+  return db.boardMember.findUnique({
+    where: {
+      boardId_userId: {
+        boardId,
+        userId,
+      },
+    },
+  });
+}
+
+export async function upsertBoardMemberByEmail(
+  boardId: string,
+  actorUserId: string,
+  email: string,
+  role: TeamRole,
+): Promise<DbBoardMember> {
+  await requireLeader(boardId, actorUserId);
+
+  const user = await db.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    throw new Error("Invitee must already have an account.");
+  }
+
+  return db.boardMember.upsert({
+    where: {
+      boardId_userId: {
+        boardId,
+        userId: user.id,
+      },
+    },
+    update: {
+      role,
+    },
+    create: {
+      boardId,
+      userId: user.id,
+      role,
+    },
+    include: {
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
+  });
+}
+
+export async function updateBoardMemberRole(
+  boardId: string,
+  actorUserId: string,
+  memberUserId: string,
+  role: TeamRole,
+): Promise<DbBoardMember> {
+  await requireLeader(boardId, actorUserId);
+
+  const existing = await queryBoardMembership(boardId, memberUserId);
+
+  if (!existing) {
+    throw new Error("Member not found.");
+  }
+
+  if (existing.role === "LEADER" && role !== "LEADER") {
+    const leaderCount = await db.boardMember.count({
+      where: {
+        boardId,
+        role: "LEADER",
+      },
+    });
+
+    if (leaderCount <= 1) {
+      throw new Error("A board needs at least one leader.");
+    }
+  }
+
+  return db.boardMember.update({
+    where: {
+      boardId_userId: {
+        boardId,
+        userId: memberUserId,
+      },
+    },
+    data: {
+      role,
+    },
+    include: {
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
+  });
+}
+
+async function requireLeader(boardId: string, userId: string) {
+  const board = await queryBoardById(boardId, userId);
+
+  if (!board) {
+    throw new Error("Board not found.");
+  }
+
+  const membership = board.members?.find((member) => member.userId === userId);
+
+  if (board.userId !== userId && membership?.role !== "LEADER") {
+    throw new Error("Only leaders can manage the team.");
+  }
 }

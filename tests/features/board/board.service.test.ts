@@ -38,6 +38,9 @@ describe("board.service", () => {
       {
         id: "board-1",
         title: "Alpha",
+        userId: "user-1",
+        members: [{ userId: "user-1", role: "LEADER" }],
+        _count: { members: 1 },
         columns: [
           {
             id: "col-1",
@@ -66,6 +69,8 @@ describe("board.service", () => {
         name: "Alpha",
         columnCount: 2,
         taskCount: 2,
+        role: "LEADER",
+        memberCount: 1,
       },
     ]);
   });
@@ -86,6 +91,9 @@ describe("board.service", () => {
     await expect(createBoard("Runtime Board", "user-42")).resolves.toEqual({
       id: "board-runtime",
       name: "Runtime Board",
+      role: "LEADER",
+      canEdit: true,
+      canManageTeam: true,
       columns: [
         { id: "col-backlog", name: "Backlog", order: 0, tasks: [] },
         { id: "col-progress", name: "In Progress", order: 1, tasks: [] },
@@ -100,6 +108,8 @@ describe("board.service", () => {
           name: "Runtime Board",
           columnCount: 3,
           taskCount: 0,
+          role: "LEADER",
+          memberCount: 1,
         },
       ]),
     );
@@ -131,6 +141,8 @@ describe("board.service", () => {
     queryBoardById.mockResolvedValue({
       id: "board-1",
       title: "Alpha",
+      userId: "user-1",
+      members: [{ userId: "user-1", role: "LEADER" }],
       columns: [
         { id: "col-backlog", title: "Backlog", boardId: "board-1", order: 0, tasks: [] },
         { id: "col-review", title: "Review", boardId: "board-1", order: 1, tasks: [] },
@@ -142,6 +154,9 @@ describe("board.service", () => {
     await expect(createColumn("board-1", "Review", "user-1")).resolves.toEqual({
       id: "board-1",
       name: "Alpha",
+      role: "LEADER",
+      canEdit: true,
+      canManageTeam: true,
       columns: [
         { id: "col-backlog", name: "Backlog", order: 0, tasks: [] },
         { id: "col-review", name: "Review", order: 1, tasks: [] },
@@ -162,6 +177,8 @@ describe("board.service", () => {
     queryBoardById.mockResolvedValue({
       id: "board-1",
       title: "Alpha",
+      userId: "user-1",
+      members: [{ userId: "user-1", role: "LEADER" }],
       columns: [
         { id: "col-1", title: "To Triage", boardId: "board-1", order: 0, tasks: [] },
       ],
@@ -172,6 +189,9 @@ describe("board.service", () => {
     await expect(renameColumn("col-1", "To Triage", "user-1")).resolves.toEqual({
       id: "board-1",
       name: "Alpha",
+      role: "LEADER",
+      canEdit: true,
+      canManageTeam: true,
       columns: [{ id: "col-1", name: "To Triage", order: 0, tasks: [] }],
     });
   });
