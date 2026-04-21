@@ -1,4 +1,4 @@
-# Shared Kanban Board 아키텍처 개요
+# 📋 Shared Kanban Board 아키텍처 개요
 <p align="center">
   <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
 </p>
@@ -7,7 +7,7 @@
 
 [사이트 바로가기](https://kanban-board-virid-ten.vercel.app/)
 
-## 프로젝트 개요
+## 📌 프로젝트 개요
 
 > 이 프로젝트는 [코덱스](https://openai.com/codex/)를 활용하여 바이브 코딩으로 제작되었습니다.
 
@@ -22,7 +22,7 @@
 
 ---
 
-## 아키텍처 요약
+## 🔖 아키텍처 요약
 
 ```
 Client (React + Zustand)
@@ -38,7 +38,7 @@ Realtime Layer (Pusher / WebSocket)
 
 ---
 
-## 기술 스택
+## 🛠️ 기술 스택
 
 ## 아키텍처 스타일
 
@@ -69,7 +69,7 @@ Realtime Layer (Pusher / WebSocket)
 
 ---
 
-## 핵심 설계 결정
+## 🧩 핵심 설계 결정
 
 ### 1. Server Components 우선
 
@@ -166,7 +166,7 @@ return <Board initialData={board} />;
 
 ---
 
-## 폴더 구조 철학
+## 📁 폴더 구조 철학
 
 이 프로젝트는 라우팅을 `app/` 안에 유지하고, 재사용 가능한 로직은 최상위 feature, server, utility 폴더로 분리합니다.
 이런 구조는 앱이 커져도 라우트 파일, 도메인 로직, 공용 UI 관심사가 뒤섞이지 않도록 도와줍니다.
@@ -225,7 +225,7 @@ return <Board initialData={board} />;
 
 ---
 
-## 데이터 흐름
+## 🔄 데이터 흐름
 
 ### 읽기 흐름
 
@@ -245,7 +245,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 성능 고려 사항
+## ⚡ 성능 고려 사항
 
 ### 1. 서버 측 데이터 페칭
 
@@ -264,7 +264,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 보안 고려 사항
+## 🔐 보안 고려 사항
 
 * Server Actions에서 모든 입력값 검증
 * 데이터베이스 접근은 서버 측에서만 수행
@@ -272,7 +272,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 확장성 고려 사항
+## 📈 확장성 고려 사항
 
 ### 현재(단순한 구조)
 
@@ -288,7 +288,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 트레이드오프
+## ↔️ 트레이드오프
 
 | Decision                    | Trade-off                          |
 | --------------------------- | ---------------------------------- |
@@ -298,7 +298,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 향후 개선 기능
+## 🚀 향후 개선 기능
 
 * 드래그 앤 드롭 (`@dnd-kit`)
 * 실시간 프레즌스(누가 온라인인지 표시)
@@ -308,7 +308,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 이 프로젝트가 보여주는 것
+## ✒️ 이 프로젝트가 보여주는 것
 
 * 현대적인 Next.js 아키텍처(App Router)
 * 실시간 시스템 설계의 기초
@@ -317,7 +317,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 결론
+## 📑 결론
 
 이 프로젝트는 **복잡성보다 명확성**에 초점을 맞춥니다.
 
@@ -329,7 +329,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 실행 방법
+## ▶️ 실행 방법
 
 ```bash
 npm install
@@ -353,6 +353,6 @@ npm test
 
 ---
 
-## 피드백
+## 📬 피드백
 
 제안이나 개선 아이디어가 있다면 언제든 이슈나 PR을 열어 주세요.

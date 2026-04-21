@@ -1,4 +1,4 @@
-# 🧠 Shared Kanban Board — Architecture Overview
+# 📋 Shared Kanban Board — Architecture Overview
 <p align="center">
   <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
 </p>
@@ -22,7 +22,7 @@ The goal is not just functionality, but to showcase:
 
 ---
 
-## 🏗️ Architecture Summary
+## 🔖 Architecture Summary
 
 ```
 Client (React + Zustand)
@@ -38,7 +38,7 @@ Realtime Layer (Pusher / WebSocket)
 
 ---
 
-## ⚙️ Tech Stack
+## 🛠️ Tech Stack
 
 ## Architecture Style
 
@@ -288,7 +288,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 🧪 Trade-offs
+## ↔️ Trade-offs
 
 | Decision                    | Trade-off                       |
 | --------------------------- | ------------------------------- |
@@ -308,7 +308,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 🧠 What This Project Demonstrates
+## ✒️ What This Project Demonstrates
 
 * Modern Next.js architecture (App Router)
 * Real-time system design basics
@@ -317,7 +317,7 @@ User Action → Client → Server Action → DB
 
 ---
 
-## 🏁 Conclusion
+## 📑 Conclusion
 
 This project focuses on **clarity over complexity**.
 
@@ -329,7 +329,7 @@ Instead of over-engineering, it demonstrates:
 
 ---
 
-## 📎 How to Run
+## ▶️ How to Run
 
 ```bash
 npm install
