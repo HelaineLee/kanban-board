@@ -2,7 +2,8 @@ import type { TeamRole } from "@/features/board/board.types";
 import { getTeamMembers } from "@/features/team/team.service";
 import { TeamMember, teamRoles } from "@/features/team/team.types";
 import { getDictionary } from "@/lib/i18n/server";
-import { inviteBoardMemberFromForm, updateBoardMemberRoleFromForm } from "@/server/actions/team.actions";
+import { updateBoardMemberRoleFromForm } from "@/server/actions/team.actions";
+import { InviteMemberForm } from "./InviteMemberForm";
 
 type TeamManagementProps = {
   boardId: string;
@@ -41,33 +42,7 @@ export async function TeamManagement({
         </div>
       </div>
 
-      {canManageTeam ? (
-        <form
-          action={inviteBoardMemberFromForm}
-          className="grid gap-3 rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface-strong)] p-4 md:grid-cols-[1fr_auto_auto]"
-        >
-          <input type="hidden" name="boardId" value={boardId} />
-          <label className="space-y-2">
-            <span className="text-sm font-medium text-[var(--text-secondary)]">
-              {dictionary.common.email}
-            </span>
-            <input
-              required
-              name="email"
-              type="email"
-              placeholder={dictionary.team.emailPlaceholder}
-              className="w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-input)] px-4 py-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
-            />
-          </label>
-          <RoleSelect label={dictionary.team.grade} />
-          <button
-            type="submit"
-            className="self-end rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-medium text-white hover:bg-[var(--brand-strong)]"
-          >
-            {dictionary.team.invite}
-          </button>
-        </form>
-      ) : null}
+      {canManageTeam ? <InviteMemberForm boardId={boardId} /> : null}
 
       <div className="grid gap-3">
         {members.map((member) => (

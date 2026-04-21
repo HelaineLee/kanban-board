@@ -8,21 +8,50 @@ import {
   inviteTeamMember,
 } from "@/features/team/team.service";
 import { requireUser } from "@/lib/auth";
+import { getDictionary } from "@/lib/i18n/server";
 import { isValidEmail } from "@/lib/validations";
 
-export async function inviteBoardMemberFromForm(formData: FormData) {
+type TeamActionState = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function inviteBoardMemberFromForm(
+  _previousState: TeamActionState,
+  formData: FormData,
+): Promise<TeamActionState> {
+  const { dictionary } = await getDictionary();
   const user = await requireUser();
   const boardId = String(formData.get("boardId") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const role = String(formData.get("role") ?? "");
 
   if (!boardId || !isValidEmail(email) || !isTeamRole(role)) {
-    throw new Error("Enter a valid email and team grade.");
+    return {
+      error: dictionary.errors.validTeamInviteRequired,
+    };
   }
 
-  await inviteTeamMember(boardId, user.id, email, role);
+  try {
+    await inviteTeamMember(boardId, user.id, email, role);
+  } catch (error) {
+    if (error instanceof Error && error.message === "Invitee must already have an account.") {
+      return {
+        error: dictionary.errors.inviteeAccountRequired,
+      };
+    }
+
+    return {
+      error: dictionary.errors.failedToInviteMember,
+    };
+  }
+
   revalidatePath(`/boards/${boardId}`);
   revalidatePath("/boards");
+
+  return {
+    success: true,
+  };
 }
 
 export async function updateBoardMemberRoleFromForm(formData: FormData) {

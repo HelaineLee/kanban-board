@@ -180,6 +180,9 @@ export const dictionaries = {
       failedToCreateColumn: "Failed to create column.",
       failedToRenameColumn: "Failed to rename column.",
       failedToDeleteColumn: "Failed to delete column.",
+      validTeamInviteRequired: "Enter a valid email and team grade.",
+      inviteeAccountRequired: "That email does not belong to a registered member.",
+      failedToInviteMember: "We couldn't invite that member yet. Please try again.",
     },
   },
   ko: {
@@ -358,6 +361,9 @@ export const dictionaries = {
       failedToCreateColumn: "컬럼을 만들지 못했습니다.",
       failedToRenameColumn: "컬럼 이름을 변경하지 못했습니다.",
       failedToDeleteColumn: "컬럼을 삭제하지 못했습니다.",
+      validTeamInviteRequired: "올바른 이메일과 팀 등급을 입력해 주세요.",
+      inviteeAccountRequired: "가입된 계정의 이메일만 초대할 수 있습니다.",
+      failedToInviteMember: "아직 멤버를 초대하지 못했습니다. 다시 시도해 주세요.",
     },
   },
 } as const satisfies Record<Locale, unknown>;
