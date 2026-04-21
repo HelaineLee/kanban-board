@@ -52,11 +52,12 @@ model Column {
 }
 
 model Task {
-  id       String @id @default(cuid())
-  title    String
-  columnId String
-  order    Int
-  column   Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  id          String @id @default(cuid())
+  title       String
+  description String @default("")
+  columnId    String
+  order       Int
+  column      Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
 }
 
 enum TeamRole {

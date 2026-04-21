@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 export type DbTask = {
   id: string;
   title: string;
+  description: string;
   columnId: string;
   order: number;
 };
@@ -107,7 +108,7 @@ type LoosePrismaClient = {
       include: unknown;
     }) => Promise<DbTaskOwner | null>;
     create: (args: {
-      data: { title: string; columnId: string; order: number };
+      data: { title: string; description: string; columnId: string; order: number };
     }) => Promise<DbTask>;
     update: (args: {
       where: { id: string };
@@ -406,7 +407,12 @@ export async function deleteColumn(userId: string, columnId: string): Promise<Db
   });
 }
 
-export async function insertTask(userId: string, columnId: string, title: string): Promise<DbTask> {
+export async function insertTask(
+  userId: string,
+  columnId: string,
+  title: string,
+  description: string,
+): Promise<DbTask> {
   const column = await db.column.findUnique({
     where: { id: columnId },
     include: {
@@ -427,6 +433,7 @@ export async function insertTask(userId: string, columnId: string, title: string
   return db.task.create({
     data: {
       title,
+      description,
       columnId,
       order: nextOrder,
     },

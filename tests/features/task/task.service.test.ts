@@ -35,6 +35,7 @@ describe("task.service", () => {
       {
         id: "task-1",
         title: "Ship tests",
+        description: "Keep the suite green",
         columnId: "col-1",
         order: 2,
       },
@@ -44,7 +45,7 @@ describe("task.service", () => {
       {
         id: "task-1",
         title: "Ship tests",
-        description: "",
+        description: "Keep the suite green",
         columnId: "col-1",
         order: 2,
       },
@@ -61,6 +62,7 @@ describe("task.service", () => {
     insertTask.mockResolvedValue({
       id: "task-2",
       title: "Write docs",
+      description: "Short summary",
       columnId: "col-2",
       order: 3,
     });
@@ -73,13 +75,14 @@ describe("task.service", () => {
       order: 3,
     });
 
-    expect(insertTask).toHaveBeenCalledWith("user-9", "col-2", "Write docs");
+    expect(insertTask).toHaveBeenCalledWith("user-9", "col-2", "Write docs", "Short summary");
   });
 
   it("maps the moved task response", async () => {
     updateTaskColumn.mockResolvedValue({
       id: "task-3",
       title: "Review PR",
+      description: "Ship it",
       columnId: "done",
       order: 5,
     });
@@ -87,7 +90,7 @@ describe("task.service", () => {
     await expect(moveTask("user-3", "task-3", "done")).resolves.toEqual({
       id: "task-3",
       title: "Review PR",
-      description: "",
+      description: "Ship it",
       columnId: "done",
       order: 5,
     });

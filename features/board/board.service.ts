@@ -115,7 +115,7 @@ function mapTask(task: DbTask): TaskRecord {
   return {
     id: task.id,
     title: task.title,
-    description: "",
+    description: task.description,
     columnId: task.columnId,
     order: task.order,
   };

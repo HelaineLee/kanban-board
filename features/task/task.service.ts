@@ -13,7 +13,7 @@ function mapTask(task: RawTask): TaskRecord {
   return {
     id: task.id,
     title: task.title,
-    description: "",
+    description: task.description,
     columnId: task.columnId,
     order: task.order,
   };
@@ -41,12 +41,8 @@ export async function createTask(
   title: string,
   description = "",
 ): Promise<TaskRecord> {
-  const task = await insertTask(userId, columnId, title);
-
-  return {
-    ...mapTask(task),
-    description,
-  };
+  const task = await insertTask(userId, columnId, title, description);
+  return mapTask(task);
 }
 
 export async function moveTask(
