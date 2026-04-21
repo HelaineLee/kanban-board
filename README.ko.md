@@ -1,4 +1,7 @@
 # Shared Kanban Board 아키텍처 개요
+<p align="center">
+  <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
+</p>
 
 [English version](./README.md)
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
@@ -13,8 +14,23 @@ export async function Navbar() {
   return (
     <nav className="sticky top-0 z-20 border-b border-[var(--line)] bg-[var(--surface)] px-6 py-4 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
-          {dictionary.common.appName}
+        <Link href="/" className="flex items-center" aria-label={dictionary.common.appName}>
+          <Image
+            src="/logo-kanban-bloom-mark.svg"
+            alt=""
+            width={40}
+            height={40}
+            priority
+            className="h-10 w-10 sm:hidden"
+          />
+          <Image
+            src="/logo-kanban-bloom.svg"
+            alt={dictionary.common.appName}
+            width={180}
+            height={60}
+            priority
+            className="hidden h-12 w-auto sm:block"
+          />
         </Link>
         <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
           <LanguageToggle />

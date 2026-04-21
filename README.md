@@ -1,6 +1,9 @@
 # 🧠 Shared Kanban Board — Architecture Overview
+<p align="center">
+  <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
+</p>
 
-[Korean version](./README.ko.md)
+[한국어 버전](./README.ko.md)
 
 [Go To Website](https://kanban-board-virid-ten.vercel.app/)
 
