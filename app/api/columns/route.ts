@@ -6,6 +6,7 @@ import {
 } from "@/features/board/board.service";
 import { getCurrentUser } from "@/lib/auth";
 import { getDictionary } from "@/lib/i18n/server";
+import { triggerBoardUpdated } from "@/lib/pusher";
 import { isNonEmptyString } from "@/lib/validations";
 
 export async function GET(request: Request) {
@@ -62,6 +63,9 @@ export async function POST(request: Request) {
 
   try {
     const board = await createColumn(boardId, name, user.id);
+    const socketId = request.headers.get("x-socket-id");
+
+    await triggerBoardUpdated(board.id, socketId);
 
     return Response.json({
       message: dictionary.errors.columnCreated,
@@ -99,6 +103,9 @@ export async function PATCH(request: Request) {
 
   try {
     const board = await renameColumn(columnId, name, user.id);
+    const socketId = request.headers.get("x-socket-id");
+
+    await triggerBoardUpdated(board.id, socketId);
 
     return Response.json({
       message: dictionary.errors.columnRenamed,
@@ -130,6 +137,9 @@ export async function DELETE(request: Request) {
 
   try {
     const board = await removeColumn(columnId, user.id);
+    const socketId = request.headers.get("x-socket-id");
+
+    await triggerBoardUpdated(board.id, socketId);
 
     return Response.json({
       message: dictionary.errors.columnDeleted,

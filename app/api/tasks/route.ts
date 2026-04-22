@@ -1,6 +1,7 @@
 import { getTasks } from "@/features/task/task.service";
 import { getCurrentUser } from "@/lib/auth";
 import { getDictionary } from "@/lib/i18n/server";
+import { triggerBoardUpdated } from "@/lib/pusher";
 import {
   createTask,
   moveTask,
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as {
+    boardId?: string;
     columnId?: string;
     title?: string;
     description?: string;
@@ -44,6 +46,11 @@ export async function POST(request: Request) {
       body.title ?? "",
       body.description ?? "",
     );
+    const socketId = request.headers.get("x-socket-id");
+
+    if (body.boardId) {
+      await triggerBoardUpdated(body.boardId, socketId);
+    }
 
     return Response.json({
       message: dictionary.errors.taskCreated,
@@ -65,12 +72,18 @@ export async function PATCH(request: Request) {
   }
 
   const body = (await request.json()) as {
+    boardId?: string;
     taskId?: string;
     newColumnId?: string;
   };
 
   try {
     const task = await moveTask(body.taskId ?? "", body.newColumnId ?? "");
+    const socketId = request.headers.get("x-socket-id");
+
+    if (body.boardId) {
+      await triggerBoardUpdated(body.boardId, socketId);
+    }
 
     return Response.json({
       message: dictionary.errors.taskMoved,

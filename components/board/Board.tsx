@@ -8,6 +8,7 @@ import { useLanguage } from "@/components/common/LanguageProvider";
 import { useBoard } from "@/features/board/board.hooks";
 import { useBoardStore } from "@/features/board/board.store";
 import type { BoardRecord } from "@/features/board/board.types";
+import { useRealtimeBoard } from "@/hooks/useRealtimeBoard";
 import { formatMessage } from "@/lib/i18n";
 
 type BoardProps = {
@@ -29,6 +30,20 @@ export function Board({ board }: BoardProps) {
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnName, setNewColumnName] = useState("");
   const [isSavingColumn, setIsSavingColumn] = useState(false);
+  const { socketId } = useRealtimeBoard(activeBoard.id, {
+    onBoardUpdated: async () => {
+      const response = await fetch(`/api/boards/${activeBoard.id}`, {
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as { data: BoardRecord };
+      replaceBoard(payload.data);
+    },
+  });
 
   const columnLookup = useMemo(
     () => new Map(activeBoard.columns.map((column, index) => [column.id, index])),
@@ -40,8 +55,10 @@ export function Board({ board }: BoardProps) {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        ...(socketId ? { "X-Socket-Id": socketId } : {}),
       },
       body: JSON.stringify({
+        boardId: activeBoard.id,
         taskId,
         newColumnId,
       }),
@@ -68,6 +85,7 @@ export function Board({ board }: BoardProps) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(socketId ? { "X-Socket-Id": socketId } : {}),
       },
       body: JSON.stringify({
         boardId: activeBoard.id,
@@ -102,6 +120,7 @@ export function Board({ board }: BoardProps) {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        ...(socketId ? { "X-Socket-Id": socketId } : {}),
       },
       body: JSON.stringify({
         columnId,
@@ -140,6 +159,7 @@ export function Board({ board }: BoardProps) {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        ...(socketId ? { "X-Socket-Id": socketId } : {}),
       },
       body: JSON.stringify({
         columnId,
@@ -176,8 +196,12 @@ export function Board({ board }: BoardProps) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(socketId ? { "X-Socket-Id": socketId } : {}),
       },
-      body: JSON.stringify(values),
+      body: JSON.stringify({
+        ...values,
+        boardId: activeBoard.id,
+      }),
     });
 
     if (!response.ok) {
