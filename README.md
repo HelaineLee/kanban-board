@@ -1,15 +1,19 @@
-# 📋 Shared Kanban Board — Architecture Overview
+# 📋 Kanban Bloom
 <p align="center">
   <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
 </p>
 
-[한국어 버전](./README.ko.md)
+A team-based Kanban board built with Next.js 16, Prisma, NextAuth, Zustand, and PostgreSQL.
 
-[Go To Website](https://kanban-board-virid-ten.vercel.app/)
+- [Deployed Link](https://kanban-board-virid-ten.vercel.app/)
+- Repository focus: full-stack architecture, auth, role-based access, optimistic UI
+- Main features: board management, column/task workflows, team roles, account deletion
+- Testing: Vitest unit/service tests
+- Current Status: Real-time synchronization via Pusher integration and multi-client implementation
+- Plan: Addition of task assignee feature planned
+- [한국어 버전](./README.ko.md)
 
 ## 📌 Project Overview
-
-> This project was created using Vibe coding with [Codex](https://openai.com/codex/)
 
 This project is a **real-time collaborative Kanban board** built with **Next.js 16 (App Router)**.
 It demonstrates modern full-stack architecture using **Server Components, Server Actions, and client-side state management**.
@@ -301,11 +305,8 @@ User Action → Client → Server Action → DB
 
 ## 🚀 Future Enhancements
 
-* ✅ Drag & drop (@dnd-kit)
 * ✅ Realtime presence (who’s online)
 * ⏳ Undo / redo (event sourcing lite)
-* ⏳ Role-based permissions
-* ⏳ Offline support
 
 ---
 
@@ -370,3 +371,9 @@ When a feature is added or behavior changes, the related test code should be add
 ## 📬 Feedback
 
 If you have suggestions or improvements, feel free to open an issue or PR.
+
+---
+
+## 📝 Development Note
+
+This project was created using Vibe coding with [Codex](https://openai.com/codex/)

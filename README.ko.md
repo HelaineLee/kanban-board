@@ -1,15 +1,19 @@
-# 📋 Shared Kanban Board 아키텍처 개요
+# 📋 Kanban Bloom
 <p align="center">
   <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
 </p>
 
-[English version](./README.md)
+Next.js 16, Prisma, NextAuth, Zustand, PostgreSQL로 구현한 팀 기반 칸반 보드입니다.
 
-[사이트 바로가기](https://kanban-board-virid-ten.vercel.app/)
+- [배포 링크](https://kanban-board-virid-ten.vercel.app/)
+- 핵심 역량: 풀스택 구조 설계, 인증, 권한 관리, 낙관적 UI
+- 주요 기능: 보드 생성, 컬럼/태스크 관리, 팀 역할 관리, 계정 탈퇴
+- 테스트: Vitest 기반 서비스/유틸 테스트
+- 현재 상태: Pusher 연동 및 멀티 클라이언트 반영을 통한 실시간 동기화
+- 계획: 태스크 담당자 지정 기능 추가 예정
+- [English version](./README.md)
 
 ## 📌 프로젝트 개요
-
-> 이 프로젝트는 [코덱스](https://openai.com/codex/)를 활용하여 바이브 코딩으로 제작되었습니다.
 
 이 프로젝트는 **Next.js 16 (App Router)** 로 구축한 **실시간 협업 칸반 보드**입니다.
 **Server Components, Server Actions, 그리고 클라이언트 상태 관리**를 활용한 현대적인 풀스택 아키텍처를 보여주는 예제입니다.
@@ -301,11 +305,8 @@ User Action → Client → Server Action → DB
 
 ## 🚀 향후 개선 기능
 
-* 드래그 앤 드롭 (`@dnd-kit`)
-* 실시간 프레즌스(누가 온라인인지 표시)
-* 실행 취소 / 다시 실행 (가벼운 event sourcing)
-* 역할 기반 권한
-* 오프라인 지원
+* ✅ 실시간 프레즌스(누가 온라인인지 표시)
+* ⏳ 실행 취소 / 다시 실행 (가벼운 event sourcing)
 
 ---
 
@@ -370,3 +371,9 @@ npm test
 ## 📬 피드백
 
 제안이나 개선 아이디어가 있다면 언제든 이슈나 PR을 열어 주세요.
+
+---
+
+## 📝 개발자 노트
+
+이 프로젝트는 [코덱스](https://openai.com/codex/)를 활용하여 바이브 코딩으로 제작되었습니다.
