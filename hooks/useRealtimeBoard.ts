@@ -14,6 +14,35 @@ type UseRealtimeBoardOptions = {
   onBoardUpdated: () => Promise<void> | void;
 };
 
+let pusherClient: Pusher | null = null;
+
+function getPusherClient() {
+  if (!isRealtimeClientConfigured()) {
+    return null;
+  }
+
+  if (pusherClient) {
+    return pusherClient;
+  }
+
+  const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
+  const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
+
+  if (!key || !cluster) {
+    return null;
+  }
+
+  pusherClient = new Pusher(key, {
+    cluster,
+    channelAuthorization: {
+      endpoint: "/api/realtime/auth",
+      transport: "ajax",
+    },
+  });
+
+  return pusherClient;
+}
+
 export function useRealtimeBoard(
   boardId: string,
   options: UseRealtimeBoardOptions,
@@ -22,20 +51,17 @@ export function useRealtimeBoard(
   const onBoardUpdated = useEffectEvent(options.onBoardUpdated);
 
   useEffect(() => {
-    if (!boardId || !isRealtimeClientConfigured()) return;
+    if (!boardId) {
+      setSocketId(null);
+      return;
+    }
 
-    const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
-    const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
+    const pusher = getPusherClient();
 
-    if (!key || !cluster) return;
-
-    const pusher = new Pusher(key, {
-      cluster,
-      channelAuthorization: {
-        endpoint: "/api/realtime/auth",
-        transport: "ajax",
-      },
-    });
+    if (!pusher) {
+      setSocketId(null);
+      return;
+    }
 
     const channel = pusher.subscribe(getBoardChannelName(boardId));
 
@@ -53,6 +79,7 @@ export function useRealtimeBoard(
 
     pusher.connection.bind("connected", syncSocketId);
     pusher.connection.bind("disconnected", clearSocketId);
+    syncSocketId();
     channel.bind(BOARD_UPDATED_EVENT, handleBoardChange);
 
     return () => {
@@ -60,7 +87,7 @@ export function useRealtimeBoard(
       pusher.connection.unbind("connected", syncSocketId);
       pusher.connection.unbind("disconnected", clearSocketId);
       pusher.unsubscribe(getBoardChannelName(boardId));
-      pusher.disconnect();
+      clearSocketId();
     };
   }, [boardId, onBoardUpdated]);
 
