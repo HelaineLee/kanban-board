@@ -33,7 +33,7 @@ Server Actions / Route Handlers
         ↓
 Database (PostgreSQL via Prisma)
         ↓
-Realtime Layer (Pusher / WebSocket)
+Realtime Layer (Pusher Channels)
 ```
 
 ---
@@ -64,7 +64,7 @@ It is **not** a classic MVC structure, and it is **not** strict textbook Clean A
 | ORM        | Prisma                  | Developer productivity        |
 | State      | Zustand                 | Lightweight client state      |
 | Styling    | Tailwind CSS            | Rapid UI development          |
-| Realtime   | Pusher / WebSocket      | Live collaboration            |
+| Realtime   | Pusher Channels         | Vercel-compatible live collaboration |
 | Validation | Zod                     | Runtime validation            |
 
 ---
@@ -189,6 +189,7 @@ That split makes it easier to grow the app without mixing route files, domain lo
 │  │  ├─ auth/[...nextauth]/route.ts
 │  │  ├─ boards/route.ts
 │  │  ├─ columns/route.ts
+│  │  ├─ realtime/auth/route.ts       # private channel auth
 │  │  ├─ realtime/route.ts            # realtime webhook / event
 │  │  └─ tasks/route.ts
 │  ├─ generated/prisma/
@@ -336,6 +337,19 @@ npm install
 npx prisma migrate dev
 npm run dev
 ```
+
+Realtime setup for Vercel-compatible collaboration:
+
+```bash
+PUSHER_APP_ID=...
+PUSHER_KEY=...
+PUSHER_SECRET=...
+PUSHER_CLUSTER=...
+NEXT_PUBLIC_PUSHER_KEY=...
+NEXT_PUBLIC_PUSHER_CLUSTER=...
+```
+
+`NEXT_PUBLIC_PUSHER_KEY` should match `PUSHER_KEY`, and `NEXT_PUBLIC_PUSHER_CLUSTER` should match `PUSHER_CLUSTER`.
 
 ---
 

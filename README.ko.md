@@ -33,7 +33,7 @@ Server Actions / Route Handlers
         ↓
 Database (PostgreSQL via Prisma)
         ↓
-Realtime Layer (Pusher / WebSocket)
+Realtime Layer (Pusher Channels)
 ```
 
 ---
@@ -64,7 +64,7 @@ Realtime Layer (Pusher / WebSocket)
 | ORM        | Prisma                  | 높은 개발 생산성              |
 | State      | Zustand                 | 가벼운 클라이언트 상태 관리   |
 | Styling    | Tailwind CSS            | 빠른 UI 개발                  |
-| Realtime   | Pusher / WebSocket      | 실시간 협업                   |
+| Realtime   | Pusher Channels         | Vercel 호환 실시간 협업        |
 | Validation | Zod                     | 런타임 검증                   |
 
 ---
@@ -189,6 +189,7 @@ return <Board initialData={board} />;
 │  │  ├─ auth/[...nextauth]/route.ts
 │  │  ├─ boards/route.ts
 │  │  ├─ columns/route.ts
+│  │  ├─ realtime/auth/route.ts       # 비공개 채널 인증
 │  │  ├─ realtime/route.ts            # 실시간 웹훅 / 이벤트
 │  │  └─ tasks/route.ts
 │  ├─ generated/prisma/
@@ -336,6 +337,19 @@ npm install
 npx prisma migrate dev
 npm run dev
 ```
+
+Vercel 호환 협업을 위한 실시간 설정:
+
+```bash
+PUSHER_APP_ID=...
+PUSHER_KEY=...
+PUSHER_SECRET=...
+PUSHER_CLUSTER=...
+NEXT_PUBLIC_PUSHER_KEY=...
+NEXT_PUBLIC_PUSHER_CLUSTER=...
+```
+
+`NEXT_PUBLIC_PUSHER_KEY`는 `PUSHER_KEY`와 일치해야 하며, `NEXT_PUBLIC_PUSHER_CLUSTER`는 `PUSHER_CLUSTER`와 일치해야 합니다.
 
 ---
 

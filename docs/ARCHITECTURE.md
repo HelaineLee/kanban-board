@@ -21,7 +21,9 @@ This project is a Next.js 16 App Router application for a kanban board with auth
 │  ├─ api/
 │  │  ├─ auth/[...nextauth]/route.ts
 │  │  ├─ boards/route.ts
+│  │  ├─ boards/[boardId]/route.ts    # single board fetch for realtime sync
 │  │  ├─ columns/route.ts
+│  │  ├─ realtime/auth/route.ts       # private channel authorization
 │  │  ├─ realtime/route.ts            # realtime webhook / event
 │  │  └─ tasks/route.ts
 │  ├─ generated/prisma/
@@ -63,6 +65,8 @@ This project is a Next.js 16 App Router application for a kanban board with auth
 - `app/(auth)` contains authentication pages.
 - `app/(dashboard)` contains authenticated product pages such as board views and account settings.
 - `app/api` exposes route handlers for auth, boards, columns, tasks, and realtime events.
+- `app/api/boards/[boardId]` returns a fully hydrated board snapshot used by clients after realtime events.
+- `app/api/realtime/auth` authorizes private board channels for the managed realtime provider.
 - `app/generated/prisma` contains generated Prisma client files and should be treated as generated output, not hand-maintained architecture code.
 
 ### `components/`
@@ -79,11 +83,11 @@ This project is a Next.js 16 App Router application for a kanban board with auth
 
 ### `hooks/`
 - Stores reusable cross-feature React hooks.
-- Current examples include debounce and realtime subscription helpers.
+- Current examples include debounce and realtime subscription helpers such as board channel subscriptions.
 
 ### `lib/`
 - Stores shared infrastructure and framework integration code.
-- Includes Prisma client setup, NextAuth configuration, Pusher wiring, validation helpers, utilities, and i18n helpers.
+- Includes Prisma client setup, NextAuth configuration, Pusher Channels wiring, validation helpers, utilities, and i18n helpers.
 - Code here should stay generic enough to be reused by multiple features.
 
 ### `server/`
