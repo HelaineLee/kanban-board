@@ -23,6 +23,12 @@ Next.js 16, Prisma, NextAuth, Zustand, PostgreSQL로 구현한 팀 기반 칸반
 | --- | --- |
 | ![Active board with columns and tasks](./public/screenshots/ko/board-detail.png) | ![Team access and role management](./public/screenshots/ko/team-access.png) |
 
+## 📅 ERD
+
+<p align="center">
+  <img src="./public/screenshots/erd.png" alt="Kanban Bloom ERD diagram"/>
+</p>
+
 ## 📌 프로젝트 개요
 
 이 프로젝트는 **Next.js 16 (App Router)** 로 구축한 **실시간 협업 칸반 보드**입니다.

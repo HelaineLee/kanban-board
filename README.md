@@ -23,6 +23,12 @@ A team-based Kanban board built with Next.js 16, Prisma, NextAuth, Zustand, and 
 | --- | --- |
 | ![Active board with columns and tasks](./public/screenshots/board-detail.png) | ![Team access and role management](./public/screenshots/team-access.png) |
 
+## 📅 ERD
+
+<p align="center">
+  <img src="./public/screenshots/erd.png" alt="Kanban Bloom ERD diagram"/>
+</p>
+
 ## 📌 Project Overview
 
 This project is a **real-time collaborative Kanban board** built with **Next.js 16 (App Router)**.
