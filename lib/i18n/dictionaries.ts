@@ -3,7 +3,7 @@ import type { Locale } from "@/lib/i18n";
 export const dictionaries = {
   en: {
     meta: {
-      title: "Kanban Board",
+      title: "Kanban Bloom",
       description: "Collaborative kanban workspace built with Next.js and Prisma.",
     },
     common: {
@@ -185,11 +185,11 @@ export const dictionaries = {
   },
   ko: {
     meta: {
-      title: "칸반 보드",
+      title: "칸반 블룸",
       description: "Next.js와 Prisma로 만든 협업용 칸반 워크스페이스입니다.",
     },
     common: {
-      appName: "Kanban Bloom",
+      appName: "칸반 블룸",
       boards: "보드",
       account: "계정",
       login: "로그인",
@@ -234,11 +234,11 @@ export const dictionaries = {
       loginTitle: "로그인",
       registerTitle: "회원가입",
       loginDescription: "이 워크스페이스용으로 만든 계정으로 로그인하세요.",
-      registerDescription: "데모 사용자가 아니라 내 계정에 보드가 연결되도록 계정을 만드세요.",
+      registerDescription: "계정을 생성하면 데모 사용자가 아닌 본인 소유의 보드를 갖게 됩니다.",
       needAccount: "계정이 필요하신가요?",
       registerHere: "여기서 가입하기",
       alreadyRegistered: "이미 가입하셨나요?",
-      yourAccountIsReady: "계정이 준비되었습니다. 로그인해서 보드를 열어보세요.",
+      yourAccountIsReady: "계정이 생성되었습니다. 로그인해서 보드를 열어보세요.",
       accountDeleted: "계정이 삭제되었습니다.",
       credentialsDidNotWork: "로그인 정보가 올바르지 않습니다. 다시 시도해 주세요.",
       signInSubmitting: "로그인 중...",
@@ -267,13 +267,13 @@ export const dictionaries = {
       createBoard: "보드 만들기",
       createBoardTitle: "팀을 위한 새 워크스페이스 시작하기",
       createBoardDescription:
-        "보드 이름을 입력하면 워크플로에 맞게 이름을 바꾸고 추가하거나 줄일 수 있는 시작 컬럼을 만들어 드립니다.",
+        "보드에 이름을 지정하면 각 워크플로에 맞게 이름을 변경하거나, 추가하거나, 삭제할 수 있는 기본 열이 설정됩니다.",
       newBoardsNotice: "새 보드는 시작 컬럼 3개로 생성되며, 각 보드마다 다른 컬럼 구성을 사용할 수 있습니다.",
       boardName: "보드 이름",
       boardNamePlaceholder: "2분기 계획",
       createBoardSubmitting: "보드 생성 중...",
       createBoardButton: "보드 만들기",
-      columnSummary: "이 컬럼에 작업 {count}개",
+      columnSummary: "이 컬럼의 작업 {count}개",
       emptyColumnState: "여기에 작업을 놓거나 새 작업을 추가해 보드를 움직여 보세요.",
       noDescriptionYet: "아직 이 작업에 설명이 없습니다.",
       moveLeft: "왼쪽으로 이동",
@@ -281,7 +281,7 @@ export const dictionaries = {
       addTaskDescription: "작업을 만들고 원하는 컬럼에 바로 배치하세요.",
       taskTitlePlaceholder: "보드 상세 화면 완성",
       taskDescriptionPlaceholder: "팀원이 이해할 수 있도록 간단한 맥락을 적어 주세요.",
-      createTaskFailed: "아직 작업을 저장하지 못했습니다. 다시 시도해 주세요.",
+      createTaskFailed: "작업을 저장하지 못했습니다. 다시 시도해 주세요.",
       addedTask: '"{title}" 작업을 보드에 추가했습니다.',
       taskMoveFailed: "작업 이동에 실패해 보드를 이전 상태로 되돌렸습니다.",
       movedTask: "{columnName} 컬럼으로 작업을 이동했습니다.",
@@ -294,9 +294,9 @@ export const dictionaries = {
       addedColumn: '"{columnName}" 컬럼을 추가했습니다.',
       renamedColumn: '컬럼 이름을 "{columnName}"으로 변경했습니다.',
       deletedColumn: '"{columnName}" 컬럼을 삭제했습니다.',
-      columnCreateFailed: "아직 컬럼을 추가하지 못했습니다. 다시 시도해 주세요.",
-      columnRenameFailed: "아직 컬럼 이름을 변경하지 못했습니다. 다시 시도해 주세요.",
-      columnDeleteFailed: "아직 컬럼을 삭제하지 못했습니다. 다시 시도해 주세요.",
+      columnCreateFailed: "컬럼을 추가하지 못했습니다. 다시 시도해 주세요.",
+      columnRenameFailed: "컬럼 이름을 변경하지 못했습니다. 다시 시도해 주세요.",
+      columnDeleteFailed: "컬럼을 삭제하지 못했습니다. 다시 시도해 주세요.",
       deleteNonEmptyColumnHint: "이 컬럼을 삭제하기 전에 작업을 다른 곳으로 옮겨 주세요.",
     },
     team: {
@@ -308,7 +308,7 @@ export const dictionaries = {
       updateGrade: "등급 변경",
       emailPlaceholder: "teammate@example.com",
       memberSummary: "멤버 {count}명",
-      readOnlyNotice: "뷰어 등급이라 이 보드는 읽기 전용입니다.",
+      readOnlyNotice: "뷰어 등급이므로 이 보드는 읽기 전용입니다.",
       roleLabels: {
         LEADER: "리더",
         MANAGER: "매니저",
@@ -359,7 +359,7 @@ export const dictionaries = {
       failedToDeleteColumn: "컬럼을 삭제하지 못했습니다.",
       validTeamInviteRequired: "올바른 이메일과 팀 등급을 입력해 주세요.",
       inviteeAccountRequired: "가입된 계정의 이메일만 초대할 수 있습니다.",
-      failedToInviteMember: "아직 멤버를 초대하지 못했습니다. 다시 시도해 주세요.",
+      failedToInviteMember: "멤버를 초대하지 못했습니다. 다시 시도해 주세요.",
     },
   },
 } as const satisfies Record<Locale, unknown>;
