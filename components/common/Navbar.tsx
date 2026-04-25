@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
+import { NavbarLogo } from "@/components/common/NavbarLogo";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
 import { getDictionary } from "@/lib/i18n/server";
@@ -23,14 +24,7 @@ export async function Navbar() {
             priority
             className="h-10 w-10 sm:hidden"
           />
-          <Image
-            src="/logo-kanban-bloom.svg"
-            alt={dictionary.common.appName}
-            width={180}
-            height={60}
-            priority
-            className="hidden h-12 w-auto sm:block"
-          />
+          <NavbarLogo alt={dictionary.common.appName} />
         </Link>
         <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
           <LanguageToggle />

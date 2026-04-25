@@ -1,6 +1,6 @@
 # 📋 Kanban Bloom
 <p align="center">
-  <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
+  <img src="./public/logo-kanban-bloom-white.svg" alt="Kanban Bloom"/>
 </p>
 
 A team-based Kanban board built with Next.js 16, Prisma, NextAuth, Zustand, and PostgreSQL.

@@ -1,6 +1,6 @@
 # 📋 Kanban Bloom
 <p align="center">
-  <img src="./public/logo-kanban-bloom.svg" alt="Kanban Bloom" style="background-color:white" />
+  <img src="./public/logo-kanban-bloom-white.svg" alt="Kanban Bloom"/>
 </p>
 
 Next.js 16, Prisma, NextAuth, Zustand, PostgreSQL로 구현한 팀 기반 칸반 보드입니다.
