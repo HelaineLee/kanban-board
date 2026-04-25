@@ -40,12 +40,13 @@ export async function Navbar() {
           </Link>
           {user ? (
             <>
-              <Link href="/account" className="hover:text-[var(--brand-strong)]">
-                {dictionary.common.account}
+              <Link
+                href="/account"
+                className="hover:text-[var(--brand-strong)] sm:inline-flex sm:rounded-full sm:bg-[var(--brand-soft)] sm:px-3 sm:py-1 sm:text-[var(--text-secondary)]"
+              >
+                <span className="sm:hidden">{dictionary.common.account}</span>
+                <span className="hidden sm:inline">{user.email}</span>
               </Link>
-              <span className="hidden rounded-full bg-[var(--brand-soft)] px-3 py-1 text-[var(--text-secondary)] sm:inline">
-                {user.email}
-              </span>
               <SignOutButton />
             </>
           ) : (
