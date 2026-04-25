@@ -13,6 +13,16 @@ Next.js 16, Prisma, NextAuth, Zustand, PostgreSQL로 구현한 팀 기반 칸반
 - 계획: 태스크 담당자 지정 기능 추가 예정
 - [English version](./README.md)
 
+## 📷 스크린샷 예시
+
+| 홈 | 홈 다크 모드 |
+| --- | --- |
+| ![Kanban Bloom home page](./public/screenshots/ko/home.png) | ![Kanban Bloom home page dark mode](./public/screenshots/ko/home-dark.png) |
+
+| 보드 상세 | 팀 접근 권한 |
+| --- | --- |
+| ![Active board with columns and tasks](./public/screenshots/ko/board-detail.png) | ![Team access and role management](./public/screenshots/ko/team-access.png) |
+
 ## 📌 프로젝트 개요
 
 이 프로젝트는 **Next.js 16 (App Router)** 로 구축한 **실시간 협업 칸반 보드**입니다.

@@ -13,6 +13,16 @@ A team-based Kanban board built with Next.js 16, Prisma, NextAuth, Zustand, and 
 - Plan: Addition of task assignee feature planned
 - [한국어 버전](./README.ko.md)
 
+## 📷 Sample Screenshots
+
+| Home | Home Dark Mode |
+| --- | --- |
+| ![Kanban Bloom home page](./public/screenshots/home.png) | ![Kanban Bloom home page dark mode](./public/screenshots/home-dark.png) |
+
+| Board Detail | Team Access |
+| --- | --- |
+| ![Active board with columns and tasks](./public/screenshots/board-detail.png) | ![Team access and role management](./public/screenshots/team-access.png) |
+
 ## 📌 Project Overview
 
 This project is a **real-time collaborative Kanban board** built with **Next.js 16 (App Router)**.
