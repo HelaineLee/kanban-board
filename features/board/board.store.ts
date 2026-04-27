@@ -12,6 +12,7 @@ type BoardStoreState = {
   updateColumn: (columnId: string, name: string) => void;
   removeColumn: (columnId: string) => void;
   addTask: (columnId: string, task: TaskRecord) => void;
+  updateTask: (task: TaskRecord) => void;
   moveTask: (taskId: string, targetColumnId: string) => void;
 };
 
@@ -128,6 +129,23 @@ export const useBoardStore = create<BoardStoreState>((set) => ({
                 }
               : column,
           ),
+        },
+      };
+    });
+  },
+  updateTask: (task) => {
+    set((state) => {
+      if (!state.activeBoard) {
+        return state;
+      }
+
+      return {
+        activeBoard: {
+          ...state.activeBoard,
+          columns: state.activeBoard.columns.map((column) => ({
+            ...column,
+            tasks: column.tasks.map((item) => (item.id === task.id ? task : item)),
+          })),
         },
       };
     });

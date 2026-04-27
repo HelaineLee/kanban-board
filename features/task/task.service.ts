@@ -5,6 +5,7 @@ import {
   insertTask,
   queryTasksForBoard,
   updateTaskColumn,
+  updateTaskDetails,
 } from "@/server/db/queries";
 
 type RawTask = Awaited<ReturnType<typeof insertTask>>;
@@ -51,5 +52,15 @@ export async function moveTask(
   newColumnId: string,
 ): Promise<TaskRecord> {
   const task = await updateTaskColumn(userId, taskId, newColumnId);
+  return mapTask(task);
+}
+
+export async function updateTask(
+  userId: string,
+  taskId: string,
+  title: string,
+  description = "",
+): Promise<TaskRecord> {
+  const task = await updateTaskDetails(userId, taskId, title, description);
   return mapTask(task);
 }

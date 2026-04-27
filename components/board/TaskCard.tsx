@@ -9,6 +9,7 @@ type TaskCardProps = {
   canMoveLeft: boolean;
   canMoveRight: boolean;
   canEdit: boolean;
+  onEdit: () => void;
   onMoveLeft: () => void;
   onMoveRight: () => void;
 };
@@ -19,6 +20,7 @@ export function TaskCard({
   canMoveLeft,
   canMoveRight,
   canEdit,
+  onEdit,
   onMoveLeft,
   onMoveRight,
 }: TaskCardProps) {
@@ -53,7 +55,15 @@ export function TaskCard({
           {dictionary.boards.noDescriptionYet}
         </p>
       )}
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={onEdit}
+          disabled={!canEdit}
+          className="rounded-full border border-[var(--line)] bg-[var(--surface-card)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {dictionary.common.editTask}
+        </button>
         <button
           type="button"
           onClick={onMoveLeft}

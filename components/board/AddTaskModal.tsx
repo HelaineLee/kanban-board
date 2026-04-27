@@ -10,6 +10,9 @@ type AddTaskModalProps = {
     name: string;
   }>;
   defaultColumnId?: string;
+  initialDescription?: string;
+  initialTitle?: string;
+  mode?: "create" | "edit";
   onClose: () => void;
   onSubmit: (values: {
     title: string;
@@ -22,14 +25,18 @@ type AddTaskModalProps = {
 export function AddTaskModal({
   columns,
   defaultColumnId,
+  initialDescription = "",
+  initialTitle = "",
+  mode = "create",
   onClose,
   onSubmit,
   open = false,
 }: AddTaskModalProps) {
   const { dictionary } = useLanguage();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(initialTitle);
+  const [description, setDescription] = useState(initialDescription);
   const [columnId, setColumnId] = useState(defaultColumnId ?? columns[0]?.id ?? "");
+  const isEditing = mode === "edit";
 
   if (!open) {
     return null;
@@ -54,10 +61,12 @@ export function AddTaskModal({
         }}
       >
         <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">
-          {dictionary.common.addTask}
+          {isEditing ? dictionary.common.editTask : dictionary.common.addTask}
         </h2>
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          {dictionary.boards.addTaskDescription}
+          {isEditing
+            ? dictionary.boards.editTaskDescription
+            : dictionary.boards.addTaskDescription}
         </p>
 
         <label className="mt-4 block text-sm font-medium text-[var(--text-secondary)]">
@@ -86,6 +95,7 @@ export function AddTaskModal({
         <select
           value={columnId}
           onChange={(event) => setColumnId(event.target.value)}
+          disabled={isEditing}
           className="mt-2 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)]"
         >
           {columns.map((column) => (

@@ -17,6 +17,7 @@ type ColumnProps = {
   onRenameColumn: (name: string) => Promise<boolean>;
   onDeleteColumn: () => void;
   onDropTask: (taskId: string, sourceColumnId: string) => void;
+  onEditTask: (taskId: string) => void;
   onMoveTaskLeft: (taskId: string) => void;
   onMoveTaskRight: (taskId: string) => void;
 };
@@ -31,6 +32,7 @@ export function Column({
   onRenameColumn,
   onDeleteColumn,
   onDropTask,
+  onEditTask,
   onMoveTaskLeft,
   onMoveTaskRight,
 }: ColumnProps) {
@@ -199,6 +201,7 @@ export function Column({
               canMoveLeft={canEdit && canMoveLeft}
               canMoveRight={canEdit && canMoveRight}
               canEdit={canEdit}
+              onEdit={() => onEditTask(task.id)}
               onMoveLeft={() => onMoveTaskLeft(task.id)}
               onMoveRight={() => onMoveTaskRight(task.id)}
             />

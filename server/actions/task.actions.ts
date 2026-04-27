@@ -3,6 +3,7 @@
 import {
   createTask as createTaskRecord,
   moveTask as moveTaskRecord,
+  updateTask as updateTaskRecord,
 } from "@/features/task/task.service";
 import { requireUser } from "@/lib/auth";
 import { isNonEmptyString } from "@/lib/validations";
@@ -25,4 +26,14 @@ export async function moveTask(taskId: string, newColumnId: string) {
   const user = await requireUser();
 
   return moveTaskRecord(user.id, taskId.trim(), newColumnId.trim());
+}
+
+export async function updateTask(taskId: string, title: string, description = "") {
+  if (!isNonEmptyString(taskId) || !isNonEmptyString(title)) {
+    throw new Error("Task and title are required.");
+  }
+
+  const user = await requireUser();
+
+  return updateTaskRecord(user.id, taskId.trim(), title.trim(), description.trim());
 }

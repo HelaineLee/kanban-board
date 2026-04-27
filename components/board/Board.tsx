@@ -8,6 +8,7 @@ import { useLanguage } from "@/components/common/LanguageProvider";
 import { useBoard } from "@/features/board/board.hooks";
 import { useBoardStore } from "@/features/board/board.store";
 import type { BoardRecord } from "@/features/board/board.types";
+import type { TaskRecord } from "@/features/task/task.types";
 import { useRealtimeBoard } from "@/hooks/useRealtimeBoard";
 import { formatMessage } from "@/lib/i18n";
 
@@ -22,7 +23,9 @@ export function Board({ board }: BoardProps) {
   const addTask = useBoardStore((state) => state.addTask);
   const moveTask = useBoardStore((state) => state.moveTask);
   const replaceBoard = useBoardStore((state) => state.replaceBoard);
+  const updateTaskInStore = useBoardStore((state) => state.updateTask);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskRecord | null>(null);
   const [selectedColumnId, setSelectedColumnId] = useState<string | undefined>(
     undefined,
   );
@@ -228,6 +231,61 @@ export function Board({ board }: BoardProps) {
     setIsModalOpen(false);
   }
 
+  async function handleUpdateTask(values: {
+    title: string;
+    description: string;
+    columnId: string;
+  }) {
+    if (!canEdit) {
+      setStatusMessage(dictionary.team.readOnlyNotice);
+      return;
+    }
+
+    if (!editingTask) {
+      return;
+    }
+
+    const snapshot = activeBoard;
+    const optimisticTask = {
+      ...editingTask,
+      title: values.title,
+      description: values.description,
+    };
+
+    updateTaskInStore(optimisticTask);
+
+    const response = await fetch("/api/tasks", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(socketId ? { "X-Socket-Id": socketId } : {}),
+      },
+      body: JSON.stringify({
+        boardId: activeBoard.id,
+        taskId: editingTask.id,
+        title: values.title,
+        description: values.description,
+      }),
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as
+        | { message?: string }
+        | null;
+
+      replaceBoard(snapshot);
+      setStatusMessage(payload?.message ?? dictionary.boards.updateTaskFailed);
+      return;
+    }
+
+    const payload = (await response.json()) as { data: TaskRecord };
+
+    updateTaskInStore(payload.data);
+    setStatusMessage(formatMessage(dictionary.boards.updatedTask, { title: values.title }));
+    setEditingTask(null);
+    setIsModalOpen(false);
+  }
+
   async function handleMoveTask(
     taskId: string,
     currentColumnId: string,
@@ -331,6 +389,7 @@ export function Board({ board }: BoardProps) {
             type="button"
             disabled={!canEdit}
             onClick={() => {
+              setEditingTask(null);
               setSelectedColumnId(activeBoard.columns[0]?.id);
               setIsModalOpen(true);
             }}
@@ -412,6 +471,7 @@ export function Board({ board }: BoardProps) {
               canDelete={activeBoard.columns.length > 1}
               canEdit={canEdit}
               onAddTask={() => {
+                setEditingTask(null);
                 setSelectedColumnId(column.id);
                 setIsModalOpen(true);
               }}
@@ -420,6 +480,17 @@ export function Board({ board }: BoardProps) {
               onDropTask={(taskId, sourceColumnId) =>
                 handleDropTask(taskId, sourceColumnId, column.id)
               }
+              onEditTask={(taskId) => {
+                const task = column.tasks.find((item) => item.id === taskId);
+
+                if (!task) {
+                  return;
+                }
+
+                setEditingTask(task);
+                setSelectedColumnId(column.id);
+                setIsModalOpen(true);
+              }}
               onMoveTaskLeft={(taskId) => handleMoveTask(taskId, column.id, -1)}
               onMoveTaskRight={(taskId) => handleMoveTask(taskId, column.id, 1)}
             />
@@ -428,15 +499,23 @@ export function Board({ board }: BoardProps) {
       </section>
 
       <AddTaskModal
-        key={`${selectedColumnId ?? "default"}-${isModalOpen ? "open" : "closed"}`}
+        key={`${editingTask?.id ?? selectedColumnId ?? "default"}-${
+          isModalOpen ? "open" : "closed"
+        }`}
         open={isModalOpen}
+        mode={editingTask ? "edit" : "create"}
         columns={activeBoard.columns.map((column) => ({
           id: column.id,
           name: column.name,
         }))}
         defaultColumnId={selectedColumnId}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateTask}
+        initialTitle={editingTask?.title}
+        initialDescription={editingTask?.description}
+        onClose={() => {
+          setEditingTask(null);
+          setIsModalOpen(false);
+        }}
+        onSubmit={editingTask ? handleUpdateTask : handleCreateTask}
       />
     </>
   );

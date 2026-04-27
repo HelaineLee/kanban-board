@@ -112,7 +112,9 @@ type LoosePrismaClient = {
     }) => Promise<DbTask>;
     update: (args: {
       where: { id: string };
-      data: { columnId: string; order: number };
+      data:
+        | { columnId: string; order: number }
+        | { title: string; description: string };
     }) => Promise<DbTask>;
   };
   column: {
@@ -487,6 +489,40 @@ export async function updateTaskColumn(
     data: {
       columnId: newColumnId,
       order: nextOrder,
+    },
+  });
+}
+
+export async function updateTaskDetails(
+  userId: string,
+  taskId: string,
+  title: string,
+  description: string,
+): Promise<DbTask> {
+  const task = await db.task.findUnique({
+    where: { id: taskId },
+    include: {
+      column: {
+        include: {
+          board: {
+            include: {
+              members: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!task || !canWriteBoard(task.column.board, userId)) {
+    throw new Error("Task not found.");
+  }
+
+  return db.task.update({
+    where: { id: taskId },
+    data: {
+      title,
+      description,
     },
   });
 }

@@ -1,21 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { insertTask, queryTasksForBoard, updateTaskColumn } = vi.hoisted(() => ({
-  insertTask: vi.fn(),
-  queryTasksForBoard: vi.fn(),
-  updateTaskColumn: vi.fn(),
-}));
+const { insertTask, queryTasksForBoard, updateTaskColumn, updateTaskDetails } =
+  vi.hoisted(() => ({
+    insertTask: vi.fn(),
+    queryTasksForBoard: vi.fn(),
+    updateTaskColumn: vi.fn(),
+    updateTaskDetails: vi.fn(),
+  }));
 
 vi.mock("@/server/db/queries", () => ({
   insertTask,
   queryTasksForBoard,
   updateTaskColumn,
+  updateTaskDetails,
 }));
 
 import {
   createTask,
   getTasks,
   moveTask,
+  updateTask,
 } from "@/features/task/task.service";
 
 describe("task.service", () => {
@@ -23,6 +27,7 @@ describe("task.service", () => {
     insertTask.mockReset();
     queryTasksForBoard.mockReset();
     updateTaskColumn.mockReset();
+    updateTaskDetails.mockReset();
   });
 
   it("returns an empty list when no board id is provided", async () => {
@@ -94,5 +99,32 @@ describe("task.service", () => {
       columnId: "done",
       order: 5,
     });
+  });
+
+  it("updates a task and maps the response", async () => {
+    updateTaskDetails.mockResolvedValue({
+      id: "task-4",
+      title: "Updated title",
+      description: "Updated notes",
+      columnId: "doing",
+      order: 1,
+    });
+
+    await expect(
+      updateTask("user-4", "task-4", "Updated title", "Updated notes"),
+    ).resolves.toEqual({
+      id: "task-4",
+      title: "Updated title",
+      description: "Updated notes",
+      columnId: "doing",
+      order: 1,
+    });
+
+    expect(updateTaskDetails).toHaveBeenCalledWith(
+      "user-4",
+      "task-4",
+      "Updated title",
+      "Updated notes",
+    );
   });
 });

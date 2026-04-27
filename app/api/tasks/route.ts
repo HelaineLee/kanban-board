@@ -5,6 +5,7 @@ import { triggerBoardUpdated } from "@/lib/pusher";
 import {
   createTask,
   moveTask,
+  updateTask,
 } from "@/server/actions/task.actions";
 
 export async function GET(request: Request) {
@@ -75,10 +76,14 @@ export async function PATCH(request: Request) {
     boardId?: string;
     taskId?: string;
     newColumnId?: string;
+    title?: string;
+    description?: string;
   };
 
   try {
-    const task = await moveTask(body.taskId ?? "", body.newColumnId ?? "");
+    const task = body.newColumnId
+      ? await moveTask(body.taskId ?? "", body.newColumnId)
+      : await updateTask(body.taskId ?? "", body.title ?? "", body.description ?? "");
     const socketId = request.headers.get("x-socket-id");
 
     if (body.boardId) {
@@ -86,11 +91,16 @@ export async function PATCH(request: Request) {
     }
 
     return Response.json({
-      message: dictionary.errors.taskMoved,
+      message: body.newColumnId
+        ? dictionary.errors.taskMoved
+        : dictionary.errors.taskUpdated,
       data: task,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : dictionary.errors.failedToMoveTask;
+    const fallback = body.newColumnId
+      ? dictionary.errors.failedToMoveTask
+      : dictionary.errors.failedToUpdateTask;
+    const message = error instanceof Error ? error.message : fallback;
 
     return Response.json({ message }, { status: 400 });
   }
